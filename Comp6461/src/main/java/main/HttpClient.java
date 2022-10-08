@@ -1,8 +1,10 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -103,6 +105,66 @@ public class HttpClient {
 		}
 	}
 
+public void displayResponse(BufferedReader reader, String statusCode) throws IOException {
+		
+		if(req.hasVerbose()) {
+			System.out.println(statusCode);
+			while(reader.readLine()!=null) {
+				System.out.println(reader.readLine());
+				if(reader.readLine().equals("}")) {
+					break;
+				}
+			}
+		}else {
+			boolean jsonPresent= false;
+			while(reader.readLine()!=null) {
+				if(reader.readLine().trim().equals("{")) {
+					jsonPresent= true;
+				}
+				if(jsonPresent) {
+					System.out.println(reader.readLine());
+					if(reader.readLine().equals("}")) {
+						break;
+					}
+				}
+				
+			}
+		}
+	}
+	
+	public void printInFile(BufferedReader reader, String statusCode) throws IOException {
+		
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(req.getFilePath(), true));
+		
+		if(req.hasVerbose()) {
+			System.out.println(statusCode);
+			while(reader.readLine()!=null) {
+				bufferedWriter.write(reader.readLine());
+				if(reader.readLine().equals("}")) {
+					break;
+				}
+			}
+		}else {
+			boolean jsonPresent= false;
+			while(reader.readLine()!=null) {
+				if(reader.readLine().trim().equals("{")) {
+					jsonPresent= true;
+				}
+				if(jsonPresent) {
+					bufferedWriter.write(reader.readLine());
+					if(reader.readLine().equals("}")) {
+						break;
+					}
+				}
+				
+			}
+		}
+		
+		System.out.println("Response has been stored successfully in ( "+ req.getFilePath()+ " ) File path");
+		bufferedWriter.close();
+		bufferedWriter.flush();
+	}
+	
 	public void parseRequestQuery(List<String> reqData) throws URISyntaxException, UnknownHostException, IOException {
 		//reqSplit(string[])  listOfReqData(list)
 		int i=0;

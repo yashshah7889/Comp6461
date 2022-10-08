@@ -103,6 +103,16 @@ public class ClientRequest {
 		return false;
 	}
 
+	public boolean hasVerbose() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getFilePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }
