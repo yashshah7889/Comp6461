@@ -1,5 +1,12 @@
 package main;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,12 +16,15 @@ public class HttpClient {
 	ClientRequest req= new ClientRequest();
 	int track=0;
 	
+	List<String> listOfHeaders= new ArrayList<String>();
+	
+	private static Socket socket=null;
+	
+	
 	HttpClient(){
 		System.out.println("hii");
 	}
-	List<String> listOfHeaders= new ArrayList<String>();
-	
-	public void processRequest(String command){
+	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 
 		while(true) {
 			
@@ -89,7 +99,7 @@ public class HttpClient {
 		}
 	}
 
-	public void parseRequestQuery(List<String> reqData) {
+	public void parseRequestQuery(List<String> reqData) throws URISyntaxException, UnknownHostException, IOException {
 		//reqSplit(string[])  listOfReqData(list)
 		int i=0;
 		while(i<reqData.size()) {
@@ -112,6 +122,35 @@ public class HttpClient {
 			//-o is remaining
 		i++;	
 		}
+		i=0;
+		req.setRequestMethod(reqData.get(1));
+		
+		URI uri =new URI(req.getRequestUrl());
+		String host = uri.getHost();
+		socket = new Socket(host,80);
+		//OutputStream opt= socket.getOutputStream();
+		
+		String pathWithoutProtocol = uri.getPath();
+		String query= uri.getQuery();
+		
+		if(query !=null && pathWithoutProtocol != null) {
+			
+				if(query.length()>0 || pathWithoutProtocol.length()>0) {
+					pathWithoutProtocol = pathWithoutProtocol + "?" +query;
+				}
+		}
+		
+		PrintWriter writer = new PrintWriter(socket.getOutputStream());
+		//if condition changed
+		if(pathWithoutProtocol.length() != 0) {
+			writer.println(req.getRequestMethod().toUpperCase()+ " " + pathWithoutProtocol + " / HTTP/1.0");
+		}else {
+			writer.println(req.getRequestMethod().toUpperCase()+" / HTTP/1.0");
+		}
+		
+		writer.print("Host: " + host+"\r\n");
+		
+		
 		
 	}
 	

@@ -60,5 +60,20 @@ public class ClientRequest {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	public void setRequestMethod(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getRequestUrl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getRequestMethod() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
