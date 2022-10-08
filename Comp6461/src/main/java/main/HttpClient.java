@@ -12,9 +12,12 @@ public class HttpClient {
 	HttpClient(){
 		System.out.println("hii");
 	}
+	List<String> listOfHeaders= new ArrayList<String>();
 	
 	public void processRequest(String command){
+
 		while(true) {
+			
 			if(track==0) {
 				req.setHttpRequest(command);
 				
@@ -37,7 +40,7 @@ public class HttpClient {
 			
 			// String can be converted to lowercase here in case there is a mixture  of upper and lower case then it should be splitted
 			String reqSplit[]= req.getHttpRequest().split(" ");
-			List<String>listOfReqData= Arrays.asList(reqSplit);
+			List<String> listOfReqData= Arrays.asList(reqSplit);
 			
 			if(listOfReqData.contains("help")) {
 				if(listOfReqData.contains("get")) {
@@ -87,7 +90,28 @@ public class HttpClient {
 	}
 
 	public void parseRequestQuery(List<String> reqData) {
-		
+		//reqSplit(string[])  listOfReqData(list)
+		int i=0;
+		while(i<reqData.size()) {
+			if(reqData.get(i).equalsIgnoreCase("-v")) {
+				req.setHasVerbose(true);
+			}else if(reqData.get(i).substring(0, 7).equals("http://")||reqData.get(i).substring(0, 8).equals("https://")) {
+				//splitiing of requesting in two parts domain and path after http://
+				req.setRequestUrl(reqData.get(i));
+			}else if(reqData.get(i).equals("-h")) {
+				listOfHeaders.add(reqData.get(i+1));
+				req.setHasHeader(true);
+				req.setHeaders(listOfHeaders);
+			}else if(reqData.get(i).equals("-d") || reqData.get(i).equals("--d")) {
+				req.setHasInlineData(true);
+				req.setInlineData(reqData.get(i+1));
+			}else if(reqData.get(i).equals("-f")) {
+				req.setTransferSuc(true);
+				req.setFileTransferPath(reqData.get(i+1));
+			}
+			//-o is remaining
+		i++;	
+		}
 		
 	}
 	
