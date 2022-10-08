@@ -45,6 +45,11 @@ public class ClientRequest {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean getHasInlineData() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	public void setInlineData(String string) {
 		// TODO Auto-generated method stub
@@ -75,5 +80,29 @@ public class ClientRequest {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getInlineData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean getTransferSuc() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getFileTransferPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
+	public boolean isHttpHeader() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
 
 }

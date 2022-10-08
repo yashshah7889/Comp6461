@@ -1,5 +1,8 @@
 package main;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -20,12 +23,13 @@ public class HttpClient {
 	
 	private static Socket socket=null;
 	
+	private static StringBuilder fd = null;
 	
 	HttpClient(){
 		System.out.println("hii");
 	}
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
-
+		fd = new StringBuilder();
 		while(true) {
 			
 			if(track==0) {
@@ -150,8 +154,50 @@ public class HttpClient {
 		
 		writer.print("Host: " + host+"\r\n");
 		
+		// for -d inline data
+		if(req.getHasInlineData()) {
+			if(req.getInlineData().contains("\'")) {
+				req.setInlineData(req.getInlineData().replace("\'", ""));
+			}
+			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
 		
+		//for -f fpr sending file data
+		}else if(req.getTransferSuc()) {
+			
+			File fsend = new File(req.getFileTransferPath());
+			BufferedReader bf = new BufferedReader(new FileReader(fsend));
+			String str;
+			while((str =bf.readLine())!= null) {
+				fd.append(str);
+			}
+			writer.println("Content-Length: " + fd.length() +"\r\n");
+
+			bf.close();
+		}
 		
+		//-h for http header
+		if (req.isHttpHeader()) {
+			if (!listOfHeaders.isEmpty()) {
+
+				for (int j = 0; j < listOfHeaders.size(); j++) {
+					String headerdetails[] = listOfHeaders.get(j).split(":");
+					writer.write(headerdetails[0] + ":" + headerdetails[1] + "\r\n");
+				}
+			}
+		}
+		
+		if(req.getHasInlineData()) {
+			writer.print("\r\n");
+			writer.print(req.getInlineData());
+			writer.print("\r\n");
+		}else if (req.getTransferSuc()) {
+			writer.print("\r\n");
+			writer.print(fd.toString());
+			writer.print("\r\n");
+		} else {
+			writer.print("\r\n");
+		}
+		writer.flush();
 	}
 	
 }
