@@ -8,13 +8,17 @@ public class ClientRequest {
 	private boolean hasHeader;
 	private String url;
 	private List<String> listOfHeaders;
+	private boolean hasInlineData;
+	private String inlineData;
+	private String filePath;
+	private boolean transferSucc;
 	
 	ClientRequest(){
 		System.out.println("hello");
 	}
 	
 	public void setHttpRequest(String cURL) {
-		cURL=httpRequest;
+		httpRequest= cURL;
 		
 	}
 	public String getHttpRequest() {
@@ -25,14 +29,19 @@ public class ClientRequest {
 		this.hasVerbose=hasVerbose;
 		
 	}
-	public boolean isVerbosePreset() {
+	
+	public boolean hasVerbose() {
 		return this.hasVerbose;
 	}
-
+	
 	public void setRequestUrl(String url) {
 		this.url= url;
 	}
 
+	public String getRequestUrl() {
+		return url;
+	}
+	
 	public void setHasHeader(boolean hasHeader) {
 		this.hasHeader= hasHeader;
 	}
@@ -41,76 +50,56 @@ public class ClientRequest {
 		this.listOfHeaders= listOfHeaders;
 	}
 
-	public void setHasInlineData(boolean b) {
-		// TODO Auto-generated method stub
-		
+	public void setHasInlineData(boolean hasInlineData) {
+		this.hasInlineData= hasInlineData;
 	}
 	
 	public boolean getHasInlineData() {
-		// TODO Auto-generated method stub
-		return false;
+		return hasInlineData;
 	}
 
-	public void setInlineData(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setTransferSuc(boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setFileTransferPath(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setRequestMethod(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public String getRequestUrl() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getRequestMethod() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setInlineData(String inlineData) {
+		this.inlineData= inlineData;
 	}
 
 	public String getInlineData() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.inlineData;
+	}
+	
+	public void setTransferSuc(boolean transferSucc) {
+		this.transferSucc= transferSucc;
 	}
 
 	public boolean getTransferSuc() {
-		// TODO Auto-generated method stub
-		return false;
+		return transferSucc;
+	}
+	
+	public void setFileTransferPath(String string) {
+		
 	}
 
 	public String getFileTransferPath() {
-		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public void setRequestMethod(String string) {
+		
+	}
+
+
+	public String getRequestMethod() {
 		return null;
 	}
 
 	
 
 	public boolean isHttpHeader() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public boolean hasVerbose() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	public String getFilePath() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.filePath;
 	}
 
 
