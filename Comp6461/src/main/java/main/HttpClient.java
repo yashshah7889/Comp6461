@@ -34,22 +34,18 @@ public class HttpClient {
 		fd = new StringBuilder();
 		
 		// to enter the command till the right command not entered.
-		while(true) {
-			
+		while(true){
 			if(track==0) {
 				req.setHttpRequest(command);
-				
 				if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
 					System.out.println("URL not valid please try again");
 					track++;
 					continue;
-				}
-				
+				}	
 			}else {
 				Scanner sc= new Scanner(System.in);
 				String query= sc.nextLine();
 				req.setHttpRequest(query);
-				
 				if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
 					System.out.println("URL not valid please try again");
 					continue;
