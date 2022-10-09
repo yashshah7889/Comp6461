@@ -43,6 +43,7 @@ public class HttpClient {
 					continue;
 				}	
 			}else {
+				System.out.println("Please enter the command again.");
 				Scanner sc= new Scanner(System.in);
 				String query= sc.nextLine();
 				req.setHttpRequest(query);

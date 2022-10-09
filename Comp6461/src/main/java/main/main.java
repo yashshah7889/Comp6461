@@ -12,7 +12,7 @@ public class main {
 public static void main(String args[]) throws URISyntaxException, UnknownHostException, IOException {
 	
 		HttpClient client = new HttpClient();
-		System.out.println("Enetr the command you want to execute.");
+		System.out.println("Enter the command you want to execute.");
 		Scanner sc=new Scanner(System.in);
 		String cURL=sc.nextLine();
 		client.processRequest(cURL);
