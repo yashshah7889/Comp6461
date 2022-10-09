@@ -170,7 +170,7 @@ public void displayResponse(BufferedReader reader, String statusCode) throws IOE
 		while(i<reqData.size()) {
 			if(reqData.get(i).equalsIgnoreCase("-v")) {
 				req.setHasVerbose(true);
-			}else if(reqData.get(i).substring(0, 7).equals("http://")||reqData.get(i).substring(0, 8).equals("https://")) {
+			}else if(reqData.get(i).startsWith("http://")||reqData.get(i).startsWith("https://")) {
 				//splitiing of requesting in two parts domain and path after http://
 				req.setRequestUrl(reqData.get(i));
 			}else if(reqData.get(i).equals("-h")) {
