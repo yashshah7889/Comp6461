@@ -136,6 +136,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			while((line=reader.readLine()) != null) {
 				System.out.println(line);
 				if(line.equals("}")) {
+					
 					break;
 				}
 			}
@@ -143,8 +144,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			
 			boolean jsonPresent= false;
 			while((line=reader.readLine()) != null) {
-				//System.out.println("hiuo");
-				System.out.println(line);
 				if(line.trim().equals("{")) {
 					jsonPresent= true;
 				}
@@ -234,14 +233,14 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 				if(query.length()>0 || pathWithoutProtocol.length()>0) {
 					pathWithoutProtocol = pathWithoutProtocol + "?" +query;
 				}
-		}
-		
+		};
 		PrintWriter writer = new PrintWriter(opt);
 		//if condition changed
 		if(pathWithoutProtocol.length() == 0) {
-			writer.println(req.getRequestMethod().toUpperCase() + " / HTTP/1.1");
+			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
 		}else {
-			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " / HTTP/1.1");
+			System.out.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
+			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
 		}
 		
 		writer.print("Host: " + host + "\r\n");

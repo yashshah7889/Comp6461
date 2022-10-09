@@ -16,5 +16,9 @@ public static void main(String args[]) throws URISyntaxException, UnknownHostExc
 		Scanner sc=new Scanner(System.in);
 		String cURL=sc.nextLine();
 		client.processRequest(cURL);
+		
+		sc.close();
 	}
 }
+
+//httpc post -h Content-Type:application/json --d '{"Assignment": 1}' http://httpbin.org/post
