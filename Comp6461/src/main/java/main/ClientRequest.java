@@ -1,5 +1,6 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientRequest {
@@ -7,16 +8,48 @@ public class ClientRequest {
 	private boolean hasVerbose;
 	private boolean hasHeader;
 	private String url;
-	private List<String> listOfHeaders;
+	private List<String> listOfHeaders=new ArrayList<String>();
 	private boolean hasInlineData;
 	private String inlineData;
 	private String filePath;
 	private boolean transferSucc;
 	private String fileTransferPath;
 	private String requestMethod;
+	private boolean isFileWrite;
+	private String fileWritePath;
+	private boolean isRedirect;
+	private String redirectLocation;
 	
 	ClientRequest(){
 		System.out.println("hello");
+	}
+	
+	public void setRequestUrl(String url) {
+		this.url= url;
+	}
+	public String getRequestUrl() {
+		return url;
+	}
+	
+	public void setInlineData(String inlineData) {
+		this.inlineData= inlineData;
+	}
+	public String getInlineData() {
+		return this.inlineData;
+	}
+	
+	public String getRedirectLocation() {
+		return redirectLocation;
+	}
+	public void setRedirectLocation(String redirectLocation) {
+		this.redirectLocation = redirectLocation;
+	}
+	
+	public void setRequestMethod(String requestMethod) {
+		this.requestMethod=requestMethod;
+	}
+	public String getRequestMethod() {
+		return this.requestMethod;
 	}
 	
 	public void setHttpRequest(String cURL) {
@@ -33,13 +66,6 @@ public class ClientRequest {
 		return this.hasVerbose;
 	}
 	
-	public void setRequestUrl(String url) {
-		this.url= url;
-	}
-	public String getRequestUrl() {
-		return url;
-	}
-	
 	public void setHasHeader(boolean hasHeader) {
 		this.hasHeader= hasHeader;
 	}
@@ -47,13 +73,6 @@ public class ClientRequest {
 		return this.hasHeader;
 	}
 	
-	public void setHeaders(List<String> listOfHeaders) {
-		this.listOfHeaders= listOfHeaders;
-	}
-	public List<String> getHeaderLst() {
-		return listOfHeaders;
-	}
-
 	public void setHasInlineData(boolean hasInlineData) {
 		this.hasInlineData= hasInlineData;
 	}
@@ -61,18 +80,19 @@ public class ClientRequest {
 		return hasInlineData;
 	}
 	
-	public void setInlineData(String inlineData) {
-		this.inlineData= inlineData;
-	}
-	public String getInlineData() {
-		return this.inlineData;
-	}
-	
 	public void setTransferSuc(boolean transferSucc) {
 		this.transferSucc= transferSucc;
 	}
 	public boolean getTransferSuc() {
 		return transferSucc;
+	}
+
+	public boolean isFileWrite() {
+		return isFileWrite;
+	}
+
+	public void setFileWrite(boolean isFileWrite) {
+		this.isFileWrite = isFileWrite;
 	}
 	
 	public void setFileTransferPath(String fileTransferPath) {
@@ -82,19 +102,28 @@ public class ClientRequest {
 		return this.fileTransferPath;
 	}
 	
-	public void setRequestMethod(String requestMethod) {
-		this.requestMethod=requestMethod;
+	public void setFileWritePath(String fileWritePath) {
+		this.fileWritePath=fileWritePath;
 	}
-	public String getRequestMethod() {
-		return this.requestMethod;
+	public String getFileWritePath() {
+		return this.fileWritePath;
+	}
+	
+	public boolean isRedirect() {
+		return isRedirect;
 	}
 
-	public String getFilePath() {
-		return this.filePath;
+	public void setRedirect(boolean isRedirect) {
+		this.isRedirect = isRedirect;
 	}
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	
+	public void setHeaders(List<String> listOfHeaders) {
+		this.listOfHeaders= listOfHeaders;
 	}
+	public List<String> getHeaderLst() {
+		return listOfHeaders;
+	}
+
 
 
 
