@@ -27,8 +27,7 @@ public class ClientRequest {
 	}
 
 	public void setHasVerbose(boolean hasVerbose) {
-		this.hasVerbose=hasVerbose;
-		
+		this.hasVerbose=hasVerbose;	
 	}
 	public boolean hasVerbose() {
 		return this.hasVerbose;

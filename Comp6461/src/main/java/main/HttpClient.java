@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -100,14 +101,35 @@ public class HttpClient {
 				
 				parseRequestQuery(listOfReqData);
 				
+				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				String s;
+				String status = br.readLine();
+				
+				//redirect not done
+				
+				if(req.getTransferSuc()) {
+					printInFile(br,status);
+					
+					//redirect check;
+					
+				}else {
+					//method call for printing response in console
+					displayResponse(br,status);
+				}
+				if(br != null) {
+					br.close();
+				}
+				socket.close();
+			}else {
+				System.out.println("Invalid URL please. Provide valid httpc get or httpc post URL");
 			}
 		}
 	}
 
-public void displayResponse(BufferedReader reader, String statusCode) throws IOException {
+public void displayResponse(BufferedReader reader, String status) throws IOException {
 		
 		if(req.hasVerbose()) {
-			System.out.println(statusCode);
+			System.out.println(status);
 			while(reader.readLine()!=null) {
 				System.out.println(reader.readLine());
 				if(reader.readLine().equals("}")) {
@@ -131,12 +153,12 @@ public void displayResponse(BufferedReader reader, String statusCode) throws IOE
 		}
 	}
 	
-	public void printInFile(BufferedReader reader, String statusCode) throws IOException {
+	public void printInFile(BufferedReader reader, String status) throws IOException {
 		
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(req.getFilePath(), true));
 		
 		if(req.hasVerbose()) {
-			System.out.println(statusCode);
+			System.out.println(status);
 			while(reader.readLine()!=null) {
 				bufferedWriter.write(reader.readLine());
 				if(reader.readLine().equals("}")) {
