@@ -12,14 +12,15 @@ public class ClientRequest {
 	private String inlineData;
 	private String filePath;
 	private boolean transferSucc;
+	private String fileTransferPath;
+	private String requestMethod;
 	
 	ClientRequest(){
 		System.out.println("hello");
 	}
 	
 	public void setHttpRequest(String cURL) {
-		httpRequest= cURL;
-		
+		httpRequest= cURL;	
 	}
 	public String getHttpRequest() {
 		return this.httpRequest;
@@ -29,7 +30,6 @@ public class ClientRequest {
 		this.hasVerbose=hasVerbose;
 		
 	}
-	
 	public boolean hasVerbose() {
 		return this.hasVerbose;
 	}
@@ -37,7 +37,6 @@ public class ClientRequest {
 	public void setRequestUrl(String url) {
 		this.url= url;
 	}
-
 	public String getRequestUrl() {
 		return url;
 	}
@@ -45,23 +44,27 @@ public class ClientRequest {
 	public void setHasHeader(boolean hasHeader) {
 		this.hasHeader= hasHeader;
 	}
-
+	public boolean isHttpHeader() {
+		return this.hasHeader;
+	}
+	
 	public void setHeaders(List<String> listOfHeaders) {
 		this.listOfHeaders= listOfHeaders;
+	}
+	public List<String> getHeaderLst() {
+		return listOfHeaders;
 	}
 
 	public void setHasInlineData(boolean hasInlineData) {
 		this.hasInlineData= hasInlineData;
 	}
-	
 	public boolean getHasInlineData() {
 		return hasInlineData;
 	}
-
+	
 	public void setInlineData(String inlineData) {
 		this.inlineData= inlineData;
 	}
-
 	public String getInlineData() {
 		return this.inlineData;
 	}
@@ -69,37 +72,29 @@ public class ClientRequest {
 	public void setTransferSuc(boolean transferSucc) {
 		this.transferSucc= transferSucc;
 	}
-
 	public boolean getTransferSuc() {
 		return transferSucc;
 	}
 	
-	public void setFileTransferPath(String string) {
-		
+	public void setFileTransferPath(String fileTransferPath) {
+		this.fileTransferPath=fileTransferPath;
 	}
-
 	public String getFileTransferPath() {
-		return null;
+		return this.fileTransferPath;
 	}
 	
-	public void setRequestMethod(String string) {
-		
+	public void setRequestMethod(String requestMethod) {
+		this.requestMethod=requestMethod;
 	}
-
-
 	public String getRequestMethod() {
-		return null;
+		return this.requestMethod;
 	}
-
-	
-
-	public boolean isHttpHeader() {
-		return false;
-	}
-
 
 	public String getFilePath() {
 		return this.filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 

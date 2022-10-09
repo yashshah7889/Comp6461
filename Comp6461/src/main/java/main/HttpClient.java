@@ -32,6 +32,8 @@ public class HttpClient {
 	}
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 		fd = new StringBuilder();
+		
+		// to enter the command till the right command not entered.
 		while(true) {
 			
 			if(track==0) {
