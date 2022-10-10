@@ -18,17 +18,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class HttpClient {
-	ClientRequest req= new ClientRequest();
-	int track=0;
 	
+	int track=0;
+	ClientRequest req= new ClientRequest();
 	private static List<String> listOfHeaders= null;
 	private static Socket socket=null;
 	private  StringBuilder fd = null;
-	
+	boolean flag=true;
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 		int redirectCount=0;
-		boolean flag=true;
+		
 		// to enter the command till the right command not entered.
 		while(flag){
 		
@@ -38,14 +39,7 @@ public class HttpClient {
 				req.setHttpRequest("httpc" + " "+ req.getRequestMethod()+ " -v "+ req.getRedirectLocation());
 				req.setRedirect(false);
 			}else {
-				if(track==0) {
-					req.setHttpRequest(command);
-					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
-						System.out.println("URL not valid please try again");
-						track++;
-						continue;
-					}	
-				}else {
+
 					System.out.println("Please enter the command again.");
 					Scanner sc= new Scanner(System.in);
 					String query= sc.nextLine();
@@ -55,7 +49,7 @@ public class HttpClient {
 						continue;
 					}
 				}
-			}
+			
 			
 			String reqSplit[]= req.getHttpRequest().split(" ");
 			List<String> listOfReqData= Arrays.asList(reqSplit);
@@ -92,14 +86,12 @@ public class HttpClient {
 			else if(listOfReqData.get(0).contains("httpc") && (listOfReqData.get(1).contains("get") || listOfReqData.get(1).contains("post"))) {
 				if(listOfReqData.get(1).contains("get") && (listOfReqData.contains("-d") || listOfReqData.contains("-f") || listOfReqData.contains("--d"))) {
 					System.out.println("get option should not be used with the options -d or -f");
-					//continue;
-					break;
+					continue;
 				}
 				
 				if(listOfReqData.get(1).contains("post") &&( listOfReqData.contains("-f") &&  (listOfReqData.contains("-d") || listOfReqData.contains("--d")))){
 					System.out.println("post should have either -d or -f but not both");
-					//continue;
-					break;
+					continue;
 				}
 				
 				parseRequestQuery(listOfReqData);
@@ -139,7 +131,7 @@ public class HttpClient {
 			}else {
 				System.out.println("Invalid URL please. Provide valid httpc get or httpc post URL");
 			}
-			flag=false;
+			//flag=false;
 		}
 	}
 
@@ -215,7 +207,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 	
 	//method to parse the requested query
 	public void parseRequestQuery(List<String> reqData) throws URISyntaxException, UnknownHostException, IOException {
-		
+		req= new ClientRequest();
 		//checking the conditions for different parameters of query
 		int i=0;
 		while(i<reqData.size()) {
