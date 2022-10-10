@@ -26,9 +26,6 @@ public class HttpClient {
 	private static Socket socket=null;
 	private  StringBuilder fd = null;
 	
-	HttpClient(){
-		System.out.println("hii");
-	}
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 		
 		boolean flag=true;
@@ -87,7 +84,7 @@ public class HttpClient {
 			}
 			
 			
-			if(listOfReqData.get(0).contains("httpc") && (listOfReqData.get(1).contains("get") || listOfReqData.get(1).contains("post"))) {
+			else if(listOfReqData.get(0).contains("httpc") && (listOfReqData.get(1).contains("get") || listOfReqData.get(1).contains("post"))) {
 				if(listOfReqData.get(1).contains("get") && (listOfReqData.contains("-d") || listOfReqData.contains("-f") || listOfReqData.contains("--d"))) {
 					System.out.println("get option should not be used with the options -d or -f");
 					continue;
@@ -249,7 +246,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		if(pathWithoutProtocol.length() == 0) {
 			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
 		}else {
-			System.out.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
 			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
 		}
 		
@@ -270,7 +266,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			if(req.getInlineData().contains("\'")) {
 				req.setInlineData(req.getInlineData().replace("\'", ""));
 			}
-			System.out.println(req.getInlineData());
 			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
 		
 		//for -f fpr sending file data

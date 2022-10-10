@@ -20,9 +20,7 @@ public class ClientRequest {
 	private boolean isRedirect;
 	private String redirectLocation;
 	
-	ClientRequest(){
-		System.out.println("hello");
-	}
+	
 	
 	public void setRequestUrl(String url) {
 		this.url= url;
