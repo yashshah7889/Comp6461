@@ -21,4 +21,7 @@ public static void main(String args[]) throws URISyntaxException, UnknownHostExc
 	}
 }
 
-//httpc post -h Content-Type:application/json --d '{"Assignment": 1}' http://httpbin.org/post
+//httpc get http://httpbin.org/get?course=networking&assignment=1
+//httpc get -v http://httpbin.org/get?course=networking&assignment=1
+//httpc post -h Content-Type:application/json --d '{"Assignment":1}' http://httpbin.org/post
+//httpc post http://httpbin.org/post -h Content-Type:application/json -f C:\Users\yashs\git\Comp6461\Comp6461\src\main\java\main\inputFile.txt

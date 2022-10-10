@@ -24,7 +24,7 @@ public class HttpClient {
 	
 	private static List<String> listOfHeaders= null;
 	private static Socket socket=null;
-	private static StringBuilder fd = null;
+	private  StringBuilder fd = null;
 	
 	HttpClient(){
 		System.out.println("hii");
@@ -34,7 +34,7 @@ public class HttpClient {
 		boolean flag=true;
 		// to enter the command till the right command not entered.
 		while(flag){
-			fd = new StringBuilder();
+			//fd = new StringBuilder();
 			listOfHeaders =new ArrayList<String>();
 			if(track==0) {
 				req.setHttpRequest(command);
@@ -200,8 +200,12 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		while(i<reqData.size()) {
 			if(reqData.get(i).equalsIgnoreCase("-v")) {
 				req.setHasVerbose(true);
-			}else if(reqData.get(i).startsWith("http://") || reqData.get(i).startsWith("https://")) {
+			}else if(reqData.get(i).startsWith("\'http://") || reqData.get(i).startsWith("\'https://")) {
 				//splitiing of requesting in two parts domain and path after http://
+				System.out.println(reqData.get(i).replaceAll("^\'|\'$", ""));
+		
+				req.setRequestUrl(reqData.get(i).replaceAll("^\'|\'$", ""));
+			}else if(reqData.get(i).startsWith("http://") || reqData.get(i).startsWith("https://")) {		
 				req.setRequestUrl(reqData.get(i));
 			}else if(reqData.get(i).equals("-h")) {
 				listOfHeaders.add(reqData.get(i+1));
@@ -245,28 +249,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		
 		writer.print("Host: " + host + "\r\n");
 		
-		// for -d inline data
-		if(req.getHasInlineData()) {
-			if(req.getInlineData().contains("\'")) {
-				req.setInlineData(req.getInlineData().replace("\'", ""));
-			}
-			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
-		
-		//for -f fpr sending file data
-		}else if(req.getTransferSuc()) {
-			
-			File fsend = new File(req.getFileTransferPath());
-			BufferedReader bf = new BufferedReader(new FileReader(fsend));
-			String str;
-			while((str =bf.readLine())!= null) {
-				fd.append(str);
-			}
-			writer.println("Content-Length: " + fd.length() +"\r\n");
-
-			bf.close();
-		}
-		
-		//-h for http header
+		////-h for http header
 		if (req.isHttpHeader()) {
 			if (!listOfHeaders.isEmpty()) {
 
@@ -276,6 +259,31 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 				}
 			}
 		}
+		// for -d inline data
+		if(req.getHasInlineData()) {
+			if(req.getInlineData().contains("\'")) {
+				req.setInlineData(req.getInlineData().replace("\'", ""));
+			}
+			System.out.println(req.getInlineData());
+			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
+		
+		//for -f fpr sending file data
+		}else if(req.getTransferSuc()) {
+			
+			File fsend = new File(req.getFileTransferPath());
+			BufferedReader bf = new BufferedReader(new FileReader(fsend));
+			fd=new StringBuilder();
+			String str;
+			while((str =bf.readLine())!= null) {
+				fd.append(str);
+			}
+			writer.println("Content-Length: " + fd.length() +"\r\n");
+
+			bf.close();
+		}
+		
+		
+		
 		
 		if(req.getHasInlineData()) {
 			writer.print("\r\n");
