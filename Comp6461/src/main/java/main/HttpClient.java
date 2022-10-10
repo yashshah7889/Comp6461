@@ -161,26 +161,27 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 	
 	public void printInFile(BufferedReader reader, String status) throws IOException {
 		
-		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(req.getFileWritePath(), true));
-		
+		BufferedWriter bw = new BufferedWriter(new FileWriter(req.getFileWritePath(), true));
+		PrintWriter pw = new PrintWriter(bw);
+		String line;
 		if(req.hasVerbose()) {
-			bufferedWriter.write(status);
+			pw.println(status);
 			System.out.println(status);
-			while(reader.readLine()!=null) {
-				bufferedWriter.write(reader.readLine());
-				if(reader.readLine().equals("}")) {
+			while((line=reader.readLine())!=null) {
+				pw.println(line);
+				if(line.equals("}")) {
 					break;
 				}
 			}
 		}else {
 			boolean jsonPresent= false;
-			while((reader.readLine())!=null) {
-				if((reader.readLine()).trim().equals("{")) {
+			while((line=reader.readLine())!=null) {
+				if(line.trim().equals("{")) {
 					jsonPresent= true;
 				}
 				if(jsonPresent) {
-					bufferedWriter.write(reader.readLine());
-					if((reader.readLine()).equals("}")) {
+					pw.println(line);
+					if(line.equals("}")) {
 						break;
 					}
 				}
@@ -189,8 +190,8 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		}
 		
 		System.out.println("Response has been stored successfully in ( "+ req.getFileWritePath()+ " ) File path");
-		bufferedWriter.flush();
-		bufferedWriter.close();
+		//bw.flush();
+		pw.close();
 		
 	}
 	
@@ -217,6 +218,11 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			}else if(reqData.get(i).equals("-f")) {
 				req.setTransferSuc(true);
 				req.setFileTransferPath(reqData.get(i+1));
+			}else if (reqData.get(i).equals("-o")) {
+
+				req.setFileWrite(true);
+				req.setFileWritePath(reqData.get(i + 1));
+
 			}
 			//-o is remaining
 		i++;	
