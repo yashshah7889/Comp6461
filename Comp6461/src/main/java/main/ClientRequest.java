@@ -21,7 +21,7 @@ public class ClientRequest {
 	private String redirectLocation;
 	
 	
-	
+	//class contains all the getter and setter methods required in HttpClient
 	public void setRequestUrl(String url) {
 		this.url= url;
 	}

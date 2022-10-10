@@ -27,31 +27,36 @@ public class HttpClient {
 	private  StringBuilder fd = null;
 	
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
-		
+		int redirectCount=0;
 		boolean flag=true;
 		// to enter the command till the right command not entered.
 		while(flag){
-			//fd = new StringBuilder();
+		
 			listOfHeaders =new ArrayList<String>();
-			if(track==0) {
-				req.setHttpRequest(command);
-				if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
-					System.out.println("URL not valid please try again");
-					track++;
-					continue;
-				}	
+			if(req.isRedirect() && redirectCount<=3) {
+				redirectCount++;
+				req.setHttpRequest("httpc" + " "+ req.getRequestMethod()+ " -v "+ req.getRedirectLocation());
+				req.setRedirect(false);
 			}else {
-				System.out.println("Please enter the command again.");
-				Scanner sc= new Scanner(System.in);
-				String query= sc.nextLine();
-				req.setHttpRequest(query);
-				if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
-					System.out.println("URL not valid please try again");
-					continue;
+				if(track==0) {
+					req.setHttpRequest(command);
+					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
+						System.out.println("URL not valid please try again");
+						track++;
+						continue;
+					}	
+				}else {
+					System.out.println("Please enter the command again.");
+					Scanner sc= new Scanner(System.in);
+					String query= sc.nextLine();
+					req.setHttpRequest(query);
+					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
+						System.out.println("URL not valid please try again");
+						continue;
+					}
 				}
 			}
 			
-			// String can be converted to lowercase here in case there is a mixture  of upper and lower case then it should be splitted
 			String reqSplit[]= req.getHttpRequest().split(" ");
 			List<String> listOfReqData= Arrays.asList(reqSplit);
 			
@@ -83,35 +88,49 @@ public class HttpClient {
 				}
 			}
 			
-			
+			//validation of conditions for get and post
 			else if(listOfReqData.get(0).contains("httpc") && (listOfReqData.get(1).contains("get") || listOfReqData.get(1).contains("post"))) {
 				if(listOfReqData.get(1).contains("get") && (listOfReqData.contains("-d") || listOfReqData.contains("-f") || listOfReqData.contains("--d"))) {
 					System.out.println("get option should not be used with the options -d or -f");
-					continue;
+					//continue;
+					break;
 				}
 				
 				if(listOfReqData.get(1).contains("post") &&( listOfReqData.contains("-f") &&  (listOfReqData.contains("-d") || listOfReqData.contains("--d")))){
 					System.out.println("post should have either -d or -f but not both");
-					continue;
+					//continue;
+					break;
 				}
 				
 				parseRequestQuery(listOfReqData);
 				
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				//String s;
-				String status = br.readLine();
 				
-				//redirect not done
+				String status = br.readLine();
+				String t;
+			
+				String[] sa= status.split(" ");
+				if(sa[1].contains("3")){
+					req.setRedirect(true);
+					while((t= br.readLine())!=null) {
+						if(t.startsWith("Location:")) {
+							req.setRedirectLocation(t.split(" ")[1]);
+							System.out.println("redirect to the location: " +  req.getRedirectLocation());
+							break;
+						}
+					}
+				}
 				
 				if(req.isFileWrite()) {
+					//method call to write response in file
 					printInFile(br,status);
-					
-					//redirect check;
+
 					
 				}else {
 					
 					//method call for printing response in console
 					displayResponse(br,status);
+
 				}
 				if(br != null) {
 					br.close();
@@ -124,6 +143,7 @@ public class HttpClient {
 		}
 	}
 
+//method to display the response on console
 public void displayResponse(BufferedReader reader, String status) throws IOException {
 	
 	String line;
@@ -156,6 +176,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		}
 	}
 	
+//method to implement -o command to write the response in file
 	public void printInFile(BufferedReader reader, String status) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(req.getFileWritePath(), true));
@@ -187,19 +208,20 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		}
 		
 		System.out.println("Response has been stored successfully in ( "+ req.getFileWritePath()+ " ) File path");
-		//bw.flush();
+		pw.flush();
 		pw.close();
 		
 	}
 	
+	//method to parse the requested query
 	public void parseRequestQuery(List<String> reqData) throws URISyntaxException, UnknownHostException, IOException {
-		//reqSplit(string[])  listOfReqData(list)
+		
+		//checking the conditions for different parameters of query
 		int i=0;
 		while(i<reqData.size()) {
 			if(reqData.get(i).equalsIgnoreCase("-v")) {
 				req.setHasVerbose(true);
 			}else if(reqData.get(i).startsWith("\'http://") || reqData.get(i).startsWith("\'https://")) {
-				//splitiing of requesting in two parts domain and path after http://
 				System.out.println(reqData.get(i).replaceAll("^\'|\'$", ""));
 		
 				req.setRequestUrl(reqData.get(i).replaceAll("^\'|\'$", ""));
@@ -221,7 +243,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 				req.setFileWritePath(reqData.get(i + 1));
 
 			}
-			//-o is remaining
 		i++;	
 		}
 
@@ -242,7 +263,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 				}
 		};
 		PrintWriter writer = new PrintWriter(opt);
-		//if condition changed
+	
 		if(pathWithoutProtocol.length() == 0) {
 			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
 		}else {
@@ -251,7 +272,7 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		
 		writer.print("Host: " + host + "\r\n");
 		
-		////-h for http header
+		//-h : http header
 		if (req.isHttpHeader()) {
 			if (!listOfHeaders.isEmpty()) {
 
@@ -261,14 +282,14 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 				}
 			}
 		}
-		// for -d inline data
+		// -d : inline data
 		if(req.getHasInlineData()) {
 			if(req.getInlineData().contains("\'")) {
 				req.setInlineData(req.getInlineData().replace("\'", ""));
 			}
 			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
 		
-		//for -f fpr sending file data
+		//-f : sending file data
 		}else if(req.getTransferSuc()) {
 			
 			File fsend = new File(req.getFileTransferPath());
@@ -282,9 +303,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 
 			bf.close();
 		}
-		
-		
-		
 		
 		if(req.getHasInlineData()) {
 			writer.print("\r\n");

@@ -11,6 +11,7 @@ public class main {
 	
 public static void main(String args[]) throws URISyntaxException, UnknownHostException, IOException {
 	
+		//main method to run the program
 		HttpClient client = new HttpClient();
 		System.out.println("Enter the command you want to execute.");
 		Scanner sc=new Scanner(System.in);
@@ -20,9 +21,3 @@ public static void main(String args[]) throws URISyntaxException, UnknownHostExc
 		sc.close();
 	}
 }
-
-//httpc get http://httpbin.org/get?course=networking&assignment=1
-//httpc get -v http://httpbin.org/get?course=networking&assignment=1
-//httpc post -h Content-Type:application/json --d '{"Assignment":1}' http://httpbin.org/post
-//httpc post http://httpbin.org/post -h Content-Type:application/json -f inputFile.txt
-//httpc get -v http://httpbin.org/get?course=networking&assignment=1 -o hello.txt
