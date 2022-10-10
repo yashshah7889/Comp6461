@@ -130,7 +130,7 @@ public class HttpClient {
 					
 					//method call for printing response in console
 					displayResponse(br,status);
-
+					
 				}
 				if(br != null) {
 					br.close();
@@ -222,8 +222,6 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			if(reqData.get(i).equalsIgnoreCase("-v")) {
 				req.setHasVerbose(true);
 			}else if(reqData.get(i).startsWith("\'http://") || reqData.get(i).startsWith("\'https://")) {
-				System.out.println(reqData.get(i).replaceAll("^\'|\'$", ""));
-		
 				req.setRequestUrl(reqData.get(i).replaceAll("^\'|\'$", ""));
 			}else if(reqData.get(i).startsWith("http://") || reqData.get(i).startsWith("https://")) {		
 				req.setRequestUrl(reqData.get(i));
