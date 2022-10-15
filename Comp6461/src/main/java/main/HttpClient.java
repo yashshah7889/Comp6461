@@ -42,11 +42,17 @@ public class HttpClient {
 			}else {
 					if(count==0) {
 						query=command;
+						if(query.equalsIgnoreCase("stop")) {
+							System.exit(0);							
+						}
 						count++;
 					}else {
 						System.out.println("Please enter the command again.");
 						Scanner sc= new Scanner(System.in);
 						query= sc.nextLine();
+						if(query.equalsIgnoreCase("stop")) {
+							System.exit(0);							
+						}
 					}
 
 					req.setHttpRequest(query);
