@@ -29,20 +29,26 @@ public class HttpClient {
 	boolean flag=true;
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 		int redirectCount=0;
-		
+		int count=0;
+		String query=null;
 		// to enter the command till the right command not entered.
 		while(flag){
-		
+			
 			listOfHeaders =new ArrayList<String>();
 			if(req.isRedirect() && redirectCount<=3) {
 				redirectCount++;
 				req.setHttpRequest("httpc" + " "+ req.getRequestMethod()+ " -v "+ req.getRedirectLocation());
 				req.setRedirect(false);
 			}else {
+					if(count==0) {
+						query=command;
+						count++;
+					}else {
+						System.out.println("Please enter the command again.");
+						Scanner sc= new Scanner(System.in);
+						query= sc.nextLine();
+					}
 
-					System.out.println("Please enter the command again.");
-					Scanner sc= new Scanner(System.in);
-					String query= sc.nextLine();
 					req.setHttpRequest(query);
 					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
 						System.out.println("URL not valid please try again");
