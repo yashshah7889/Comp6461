@@ -18,7 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-
+/**
+ * client class where all the working is been carried out.
+ */
 public class HttpClient {
 	
 	int track=0;
@@ -27,6 +29,14 @@ public class HttpClient {
 	private static Socket socket=null;
 	private  StringBuilder fd = null;
 	boolean flag=true;
+	
+	/**
+	 * reading of the string and initial setup and checks.
+	 * @param command
+	 * @throws URISyntaxException
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
 		int redirectCount=0;
 		int count=0;
@@ -56,7 +66,7 @@ public class HttpClient {
 					}
 
 					req.setHttpRequest(query);
-					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty()) {
+					if(req.getHttpRequest()==null || req.getHttpRequest().isEmpty() || req.getHttpRequest().equalsIgnoreCase("httpc")) {
 						System.out.println("URL not valid please try again");
 						continue;
 					}
@@ -66,6 +76,7 @@ public class HttpClient {
 			String reqSplit[]= req.getHttpRequest().split(" ");
 			List<String> listOfReqData= Arrays.asList(reqSplit);
 			
+			//will check here for the help command
 			if(listOfReqData.contains("help")) {
 				if(listOfReqData.contains("get")) {
 					System.out.println("usage: httpc get [-v] [-h key:value] URL\r\n"
@@ -109,7 +120,6 @@ public class HttpClient {
 				parseRequestQuery(listOfReqData);
 				
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				
 				String status = br.readLine();
 				String t;
 			
@@ -126,15 +136,9 @@ public class HttpClient {
 				}
 				
 				if(req.isFileWrite()) {
-					//method call to write response in file
 					printInFile(br,status);
-
-					
 				}else {
-					
-					//method call for printing response in console
 					displayResponse(br,status);
-					
 				}
 				if(br != null) {
 					br.close();
@@ -147,7 +151,12 @@ public class HttpClient {
 		}
 	}
 
-//method to display the response on console
+/**
+ * method for displaying response in console
+ * @param reader buffer reader
+ * @param status status of thr command
+ * @throws IOException
+ */
 public void displayResponse(BufferedReader reader, String status) throws IOException {
 	
 	String line;
@@ -180,7 +189,12 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		}
 	}
 	
-//method to implement -o command to write the response in file
+/**
+ * method the print the output in file
+ * @param reader
+ * @param status
+ * @throws IOException
+ */
 	public void printInFile(BufferedReader reader, String status) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(req.getFileWritePath(), true));
@@ -217,7 +231,13 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		
 	}
 	
-	//method to parse the requested query
+	/**
+	 * method to parse the request query.
+	 * @param reqData
+	 * @throws URISyntaxException
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	public void parseRequestQuery(List<String> reqData) throws URISyntaxException, UnknownHostException, IOException {
 		req= new ClientRequest();
 		//checking the conditions for different parameters of query
