@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -24,9 +26,13 @@ public class ClientHttp {
 	int track=0;
 	RequestClient req= new RequestClient();
 	private static List<String> listOfHeaders= null;
-	private static Socket socket=null;
 	private  StringBuilder fd = null;
 	boolean flag=true;
+	
+	private static Socket socket=null;
+	static ResponseClient resp;
+	static ObjectOutputStream os= null;
+	static ObjectInputStream is=null;
 	
 	/**
 	 * reading of the string and initial setup and checks.
@@ -55,7 +61,7 @@ public class ClientHttp {
 						}
 						count++;
 					}else {
-						System.out.println("Please enter the command again.");
+						System.out.println("Please enter the command");
 						Scanner sc= new Scanner(System.in);
 						query= sc.nextLine();
 						if(query.equalsIgnoreCase("stop")) {
@@ -117,6 +123,9 @@ public class ClientHttp {
 				
 				parseRequestQuery(listOfReqData);
 				
+				
+				
+				
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String status = br.readLine();
 				String t;
@@ -132,12 +141,12 @@ public class ClientHttp {
 						}
 					}
 				}
-				
-				if(req.isFileWrite()) {
-					printInFile(br,status);
-				}else {
-					displayResponse(br,status);
-				}
+//				
+//				if(req.isFileWrite()) {
+//					printInFile(br,status);
+//				}else {
+//					displayResponse(br,status);
+//				}
 				if(br != null) {
 					br.close();
 				}
@@ -155,35 +164,37 @@ public class ClientHttp {
  * @param status status of thr command
  * @throws IOException
  */
-public void displayResponse(BufferedReader reader, String status) throws IOException {
+public void displayResponse(ResponseClient resp) throws IOException {
 	
-	String line;
+//	String line;
 		if(req.hasVerbose()) {
-			
-			System.out.println(status);
-			while((line=reader.readLine()) != null) {
-				System.out.println(line);
-				if(line.equals("}")) {
-					
-					break;
-				}
-			}
+			System.out.println(resp.getResponseHeader());
+			System.out.println(resp.getBody());
+//			System.out.println(status);
+//			while((line=reader.readLine()) != null) {
+//				System.out.println(line);
+//				if(line.equals("}")) {
+//					
+//					break;
+//				}
+//			}
 		}else {
+			System.out.println(resp.getBody());
 			
-			boolean jsonPresent= false;
-			while((line=reader.readLine()) != null) {
-				if(line.trim().equals("{")) {
-					jsonPresent= true;
-				}
-				if(jsonPresent) {
-					
-					System.out.println(line);
-					if(line.equals("}")) {
-						break;
-					}
-				}
-				
-			}
+//			boolean jsonPresent= false;
+//			while((line=reader.readLine()) != null) {
+//				if(line.trim().equals("{")) {
+//					jsonPresent= true;
+//				}
+//				if(jsonPresent) {
+//					
+//					System.out.println(line);
+//					if(line.equals("}")) {
+//						break;
+//					}
+//				}
+//				
+//			}
 		}
 	}
 	
@@ -193,34 +204,36 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
  * @param status
  * @throws IOException
  */
-	public void printInFile(BufferedReader reader, String status) throws IOException {
+	public void printInFile(ResponseClient resp) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(req.getFileWritePath(), true));
 		PrintWriter pw = new PrintWriter(bw);
 		String line;
 		if(req.hasVerbose()) {
-			pw.println(status);
-			System.out.println(status);
-			while((line=reader.readLine())!=null) {
-				pw.println(line);
-				if(line.equals("}")) {
-					break;
-				}
-			}
+			pw.println(resp.getResponseHeader());
+			pw.println(resp.getBody());
+//			System.out.println(status);
+//			while((line=reader.readLine())!=null) {
+//				pw.println(line);
+//				if(line.equals("}")) {
+//					break;
+//				}
+//			}
 		}else {
-			boolean jsonPresent= false;
-			while((line=reader.readLine())!=null) {
-				if(line.trim().equals("{")) {
-					jsonPresent= true;
-				}
-				if(jsonPresent) {
-					pw.println(line);
-					if(line.equals("}")) {
-						break;
-					}
-				}
-				
-			}
+			pw.println(resp.getBody());
+//			boolean jsonPresent= false;
+//			while((line=reader.readLine())!=null) {
+//				if(line.trim().equals("{")) {
+//					jsonPresent= true;
+//				}
+//				if(jsonPresent) {
+//					pw.println(line);
+//					if(line.equals("}")) {
+//						break;
+//					}
+//				}
+//				
+//			}
 		}
 		
 		System.out.println("Response has been stored successfully in ( "+ req.getFileWritePath()+ " ) File path");
@@ -267,47 +280,47 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 		}
 
 		req.setRequestMethod(reqData.get(1));
-		
-		URI uri =new URI(req.getRequestUrl());
-		String host = uri.getHost();
-		socket = new Socket(host, 80);
-		OutputStream opt= socket.getOutputStream();
-		
-		String pathWithoutProtocol = uri.getPath();
-		String query= uri.getQuery();
-		
-		if(pathWithoutProtocol != null && query !=null) {
-			
-				if(query.length()>0 || pathWithoutProtocol.length()>0) {
-					pathWithoutProtocol = pathWithoutProtocol + "?" +query;
-				}
-		};
-		PrintWriter writer = new PrintWriter(opt);
-	
-		if(pathWithoutProtocol.length() == 0) {
-			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
-		}else {
-			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
-		}
-		
-		writer.print("Host: " + host + "\r\n");
-		
+//		
+//		URI uri =new URI(req.getRequestUrl());
+//		String host = uri.getHost();
+//		socket = new Socket(host, 80);
+//		OutputStream opt= socket.getOutputStream();
+//		
+//		String pathWithoutProtocol = uri.getPath();
+//		String query= uri.getQuery();
+//		
+//		if(pathWithoutProtocol != null && query !=null) {
+//			
+//				if(query.length()>0 || pathWithoutProtocol.length()>0) {
+//					pathWithoutProtocol = pathWithoutProtocol + "?" +query;
+//				}
+//		};
+//		PrintWriter writer = new PrintWriter(opt);
+//	
+//		if(pathWithoutProtocol.length() == 0) {
+//			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
+//		}else {
+//			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
+//		}
+//		
+//		writer.print("Host: " + host + "\r\n");
+//		
 		//-h : http header
-		if (req.isHttpHeader()) {
-			if (!listOfHeaders.isEmpty()) {
-
-				for (int j = 0; j < listOfHeaders.size(); j++) {
-					String[] headerdetails = listOfHeaders.get(j).split(":");
-					writer.write(headerdetails[0] + ":" + headerdetails[1] + "\r\n");
-				}
-			}
-		}
+//		if (req.isHttpHeader()) {
+//			if (!listOfHeaders.isEmpty()) {
+//
+//				for (int j = 0; j < listOfHeaders.size(); j++) {
+//					String[] headerdetails = listOfHeaders.get(j).split(":");
+//					writer.write(headerdetails[0] + ":" + headerdetails[1] + "\r\n");
+//				}
+//			}
+//		}
 		// -d : inline data
 		if(req.getHasInlineData()) {
 			if(req.getInlineData().contains("\'")) {
 				req.setInlineData(req.getInlineData().replace("\'", ""));
 			}
-			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
+//			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
 		
 		//-f : sending file data
 		}else if(req.getTransferSuc()) {
@@ -319,22 +332,23 @@ public void displayResponse(BufferedReader reader, String status) throws IOExcep
 			while((str =bf.readLine())!= null) {
 				fd.append(str);
 			}
-			writer.println("Content-Length: " + fd.length() +"\r\n");
+//			writer.println("Content-Length: " + fd.length() +"\r\n");
 
 			bf.close();
+//			request.setFileSendData(fileData.toString());
 		}
 		
-		if(req.getHasInlineData()) {
-			writer.print("\r\n");
-			writer.print(req.getInlineData());
-			writer.print("\r\n");
-		}else if (req.getTransferSuc()) {
-			writer.print("\r\n");
-			writer.print(fd.toString());
-			writer.print("\r\n");
-		} else {
-			writer.print("\r\n");
-		}
-		writer.flush();
+//		if(req.getHasInlineData()) {
+//			writer.print("\r\n");
+//			writer.print(req.getInlineData());
+//			writer.print("\r\n");
+//		}else if (req.getTransferSuc()) {
+//			writer.print("\r\n");
+//			writer.print(fd.toString());
+//			writer.print("\r\n");
+//		} else {
+//			writer.print("\r\n");
+//		}
+//		writer.flush();
 	}
 }

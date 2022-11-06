@@ -13,7 +13,7 @@ public class MainStart {
 	
 		//main method to run the program
 		ClientHttp client = new ClientHttp();
-		System.out.println("Enter the command you want to execute.");
+		System.out.println("Please enter the command");
 		Scanner sc=new Scanner(System.in);
 		String cURL=sc.nextLine();
 		client.processRequest(cURL);
