@@ -1,4 +1,4 @@
-package src;
+package ass2;
 
 public class HttpClient {
 
