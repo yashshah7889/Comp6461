@@ -40,8 +40,9 @@ public class ClientHttp {
 	 * @throws URISyntaxException
 	 * @throws UnknownHostException
 	 * @throws IOException
+	 * @throws ClassNotFoundException 
 	 */
-	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException{
+	public void processRequest(String command) throws URISyntaxException, UnknownHostException, IOException, ClassNotFoundException{
 		int redirectCount=0;
 		int count=0;
 		String query=null;
@@ -123,40 +124,67 @@ public class ClientHttp {
 				
 				parseRequestQuery(listOfReqData);
 				
-				
-				
-				
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				String status = br.readLine();
-				String t;
-			
-				String[] sa= status.split(" ");
-				if(sa[1].contains("3")){
-					req.setRedirect(true);
-					while((t= br.readLine())!=null) {
-						if(t.startsWith("Location:")) {
-							req.setRedirectLocation(t.split(" ")[1]);
-							System.out.println("redirect to the location: " +  req.getRedirectLocation());
-							break;
-						}
-					}
+				URI uri = new URI(req.getRequestUrl());
+				String hostName = uri.getHost();
+
+				// establish socket connection to server
+				socket = new Socket(hostName, uri.getPort());
+				// write to socket using ObjectOutputStream
+				os = new ObjectOutputStream(socket.getOutputStream());
+				System.out.println("Sending request to Socket Server");
+				os.writeObject(req);
+
+				// read the server response message
+				is = new ObjectInputStream(socket.getInputStream());
+				resp = (ResponseClient) is.readObject();
+
+				if (req.isFileWrite()) {
+
+					// Method call for write response in file
+					printInFile(resp);
+
+				} else {
+
+					// Method call for printing response in console
+					displayResponse(resp);
+
 				}
-//				
-//				if(req.isFileWrite()) {
-//					printInFile(br,status);
-//				}else {
-//					displayResponse(br,status);
+				
+				os.close();
+				is.close();
+				
+//				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//				String status = br.readLine();
+//				String t;
+//			
+//				String[] sa= status.split(" ");
+//				if(sa[1].contains("3")){
+//					req.setRedirect(true);
+//					while((t= br.readLine())!=null) {
+//						if(t.startsWith("Location:")) {
+//							req.setRedirectLocation(t.split(" ")[1]);
+//							System.out.println("redirect to the location: " +  req.getRedirectLocation());
+//							break;
+//						}
+//					}
 //				}
-				if(br != null) {
-					br.close();
-				}
-				socket.close();
+////				
+////				if(req.isFileWrite()) {
+////					printInFile(br,status);
+////				}else {
+////					displayResponse(br,status);
+////				}
+//				if(br != null) {
+//					br.close();
+//				}
+//				socket.close();
 			}else {
 				System.out.println("Invalid URL please. Provide valid httpc get or httpc post URL");
 			}
 			//flag=false;
 		}
 	}
+
 
 /**
  * method for displaying response in console

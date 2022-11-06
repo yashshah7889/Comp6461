@@ -9,7 +9,7 @@ import main.HttpClient;
 
 public class MainStart {
 
-	public static void main(String args[]) throws URISyntaxException, UnknownHostException, IOException {
+	public static void main(String args[]) throws URISyntaxException, UnknownHostException, IOException, ClassNotFoundException {
 	
 		//main method to run the program
 		ClientHttp client = new ClientHttp();
