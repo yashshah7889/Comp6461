@@ -121,5 +121,9 @@ public class RequestClient {
 	public List<String> getHeaderLst() {
 		return listOfHeaders;
 	}
+	public String getClientType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
