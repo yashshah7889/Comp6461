@@ -197,7 +197,7 @@ public void displayResponse(ResponseClient resp) throws IOException {
 //	String line;
 		if(req.hasVerbose()) {
 			System.out.println(resp.getResponseHeader());
-			System.out.println(resp.getBody());
+			System.out.println(resp.getResponseBody());
 //			System.out.println(status);
 //			while((line=reader.readLine()) != null) {
 //				System.out.println(line);
@@ -207,7 +207,7 @@ public void displayResponse(ResponseClient resp) throws IOException {
 //				}
 //			}
 		}else {
-			System.out.println(resp.getBody());
+			System.out.println(resp.getResponseBody());
 			
 //			boolean jsonPresent= false;
 //			while((line=reader.readLine()) != null) {
@@ -239,7 +239,7 @@ public void displayResponse(ResponseClient resp) throws IOException {
 		String line;
 		if(req.hasVerbose()) {
 			pw.println(resp.getResponseHeader());
-			pw.println(resp.getBody());
+			pw.println(resp.getResponseBody());
 //			System.out.println(status);
 //			while((line=reader.readLine())!=null) {
 //				pw.println(line);
@@ -248,7 +248,7 @@ public void displayResponse(ResponseClient resp) throws IOException {
 //				}
 //			}
 		}else {
-			pw.println(resp.getBody());
+			pw.println(resp.getResponseBody());
 //			boolean jsonPresent= false;
 //			while((line=reader.readLine())!=null) {
 //				if(line.trim().equals("{")) {
