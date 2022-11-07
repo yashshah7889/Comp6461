@@ -363,7 +363,7 @@ public void displayResponse(ResponseClient resp) throws IOException {
 //			writer.println("Content-Length: " + fd.length() +"\r\n");
 
 			bf.close();
-//			request.setFileSendData(fileData.toString());
+			req.setFileSendData(fd.toString());
 		}
 		
 //		if(req.getHasInlineData()) {

@@ -44,6 +44,10 @@ public class ClientFile {
 			reqSplit[0] = "httpfs";
 			List<String> listOfReqData = Arrays.asList(reqSplit);
 			String reqUrl = "";
+			if (reqUrl.contains("\'")) {
+				reqUrl = reqUrl.replace("\'", "");
+			}
+			
 			if (fileReq.contains("post")) {
 				reqUrl = listOfReqData.get(2);
 
@@ -51,9 +55,6 @@ public class ClientFile {
 				reqUrl = listOfReqData.get(listOfReqData.size() - 1);
 			}
 			
-			if (reqUrl.contains("\'")) {
-				reqUrl = reqUrl.replace("\'", "");
-			}
 			
 			req.setHttpRequest(fileReq);
 			parseFileRequest(listOfReqData);
