@@ -1,11 +1,14 @@
 package ass2;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -132,7 +135,7 @@ public class Server {
 						}
 						if (url.contains("Content-Disposition:attachment")) {
 							serverResponse.setResponseCode("203");
-							serverResponse.setBody(response);
+							serverResponse.setResponseBody(response);
 							serverResponse.setRequestFileName(requestedFileName);
 
 						} else {
@@ -163,9 +166,9 @@ public class Server {
 									fw.write(clientRequest.getInlineData());
 									fw.close();
 								}
-								responseHeaders = getResponseHeaders(FILE_OVERWRITTEN_STATUS_CODE);
+								responseHeaders = getResponseHeaders( "HTTP/1.1 201 FILE OVER-WRITTEN");
 							} else {
-								responseHeaders = getResponseHeaders(FILE_NOT_OVERWRITTEN_STATUS_CODE);
+								responseHeaders = getResponseHeaders("HTTP/1.1 201 FILE NOT OVER-WRITTEN");
 							}
 						} else {
 							synchronized (file) {
@@ -176,7 +179,7 @@ public class Server {
 								fw.write(clientRequest.getInlineData());
 								fw.close();
 							}
-							responseHeaders = getResponseHeaders(FILE_OVERWRITTEN_STATUS_CODE);
+							responseHeaders = getResponseHeaders("HTTP/1.1 201 FILE OVER-WRITTEN");
 						}
 
 					} else {
@@ -192,7 +195,7 @@ public class Server {
 							pw.flush();
 							pw.close();
 						}
-						responseHeaders = getResponseHeaders(NEW_FILE_CREATED_STATUS_CODE);
+						responseHeaders = getResponseHeaders("HTTP/1.1 202 NEW FILE CREATED");
 
 					}
 
@@ -209,7 +212,7 @@ public class Server {
 
 				System.out.println("clientType ==> " + clientType);
 
-				if (debug)
+				if (temp)
 					System.out.println(" Server is Processing the httpc request");
 
 				String[] paramArr = {};
@@ -220,7 +223,7 @@ public class Server {
 				String inlineData = "";
 				String fileData = "";
 
-				if (clientRequest.isVerbosePreset()) {
+				if (clientRequest.hasVerbose()) {
 					serverResponse.setResponseHeaders(responseHeaders);
 				}
 				String body = "{\n";
@@ -273,7 +276,7 @@ public class Server {
 				}
 				if (clientRequest.getHasInlineData()) {
 					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getInlineData().length() + "\",";
-				} else if (clientRequest.isFilesend()) {
+				} else if (clientRequest.getTransferSuc()) {
 					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getFileSendData().length() + "\",";
 				}
 				body = body + "\n\t\t\"Connection\": \"close\",\n";
@@ -292,7 +295,7 @@ public class Server {
 				body = body + "\t\"url\": \"" + url + "\"\n";
 				body = body + "}";
 
-				serverResponse.setBody(body);
+				serverResponse.setResponseBody(body);
 				
 				if (temp)
 					System.out.println("Sending the response to Client ======>");

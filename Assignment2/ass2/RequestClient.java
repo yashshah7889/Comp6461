@@ -1,5 +1,6 @@
 package ass2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class RequestClient {
 	private boolean isRedirect;
 	private String redirectLocation;
 	private String clientType;
+	private String fileSendData;
 	
 	
 	//class contains all the getter and setter methods required in HttpClient
@@ -89,7 +91,6 @@ public class RequestClient {
 	public boolean isFileWrite() {
 		return isFileWrite;
 	}
-
 	public void setFileWrite(boolean isFileWrite) {
 		this.isFileWrite = isFileWrite;
 	}
@@ -111,7 +112,6 @@ public class RequestClient {
 	public boolean isRedirect() {
 		return isRedirect;
 	}
-
 	public void setRedirect(boolean isRedirect) {
 		this.isRedirect = isRedirect;
 	}
@@ -122,11 +122,19 @@ public class RequestClient {
 	public List<String> getHeaderLst() {
 		return listOfHeaders;
 	}
+	
 	public String getClientType() {
 		return this.clientType;
 	}
 	public void setClientType(String clientType) {
 		this.clientType= clientType;
+	}
+	
+	public String getFileSendData() {
+		return fileSendData;
+	}
+	public void setFileSendData(String fileSendData) {
+		this.fileSendData = fileSendData;
 	}
 
 }
