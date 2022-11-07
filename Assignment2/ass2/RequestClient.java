@@ -19,6 +19,7 @@ public class RequestClient {
 	private String fileWritePath;
 	private boolean isRedirect;
 	private String redirectLocation;
+	private String clientType;
 	
 	
 	//class contains all the getter and setter methods required in HttpClient
@@ -122,8 +123,10 @@ public class RequestClient {
 		return listOfHeaders;
 	}
 	public String getClientType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.clientType;
+	}
+	public void setClientType(String clientType) {
+		this.clientType= clientType;
 	}
 
 }

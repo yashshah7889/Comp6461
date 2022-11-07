@@ -24,7 +24,7 @@ import main.ClientRequest;
 
 public class ClientHttp {
 	int track=0;
-	RequestClient req= new RequestClient();
+	static RequestClient req= new RequestClient();
 	private static List<String> listOfHeaders= null;
 	private  StringBuilder fd = null;
 	boolean flag=true;
