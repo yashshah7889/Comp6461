@@ -16,6 +16,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
+/**
+ * This class is the entry point of FTP Client Library Implementation.
+ * 
+ *
+ */
 public class ClientFile {
 	static RequestClient req= new RequestClient();
 	private static List<String> listOfHeaders= null;
@@ -24,6 +29,11 @@ public class ClientFile {
 	static ObjectOutputStream os= null;
 	static ObjectInputStream is=null;
 	
+	/**
+	 * This method id the entry point and when user run this class in console used
+	 * need to provide valid request URL
+	 * 
+	 */	
 	public static void main(String[] args) throws URISyntaxException, UnknownHostException, IOException, ClassNotFoundException {
 		//user working directory
 		String directory = System.getProperty("user.dir");
