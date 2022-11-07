@@ -29,10 +29,10 @@ public class ClientHttp {
 	private  StringBuilder fd = null;
 	boolean flag=true;
 	
-	private static Socket socket=null;
+	private static Socket soc=null;
 	static ResponseClient resp;
-	static ObjectOutputStream os= null;
-	static ObjectInputStream is=null;
+	static ObjectOutputStream output= null;
+	static ObjectInputStream input=null;
 	
 	/**
 	 * reading of the string and initial setup and checks.
@@ -99,7 +99,7 @@ public class ClientHttp {
 							+ "-f file Associates the content of a file to the body HTTP POST request.\r\n"
 							+ "Either [-d] or [-f] can be used but not both.");
 				}else {
-					System.out.println("httpc is a curl-like application but supports HTTP protocol only.\r\n"
+					System.out.println("httpc input a curl-like application but supports HTTP protocol only.\r\n"
 							+ "Usage:\r\n"
 							+ "httpc command [arguments]\r\n"
 							+ "The commands are:\r\n"
@@ -127,16 +127,16 @@ public class ClientHttp {
 				URI uri = new URI(req.getRequestUrl());
 				String host = uri.getHost();
 
-				// establish socket connection to server
-				socket = new Socket(host, uri.getPort());
-				// write to socket using ObjectOutputStream
-				os = new ObjectOutputStream(socket.getOutputStream());
-				is = new ObjectInputStream(socket.getInputStream());
+				// establish soc connection to server
+				soc = new Socket(host, uri.getPort());
+				// write to soc using ObjectOutputStream
+				output = new ObjectOutputStream(soc.getOutputStream());
+				input = new ObjectInputStream(soc.getInputStream());
 				System.out.println("Sending request to Socket Server");
-				os.writeObject(req);
+				output.writeObject(req);
 
 				// read the server response message
-				resp = (ResponseClient) is.readObject();
+				resp = (ResponseClient) input.readObject();
 
 				if (req.isFileWrite()) {
 
@@ -150,10 +150,10 @@ public class ClientHttp {
 
 				}
 				
-				os.close();
-				is.close();
+				output.close();
+				input.close();
 				
-//				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//				BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
 //				String status = br.readLine();
 //				String t;
 //			
@@ -177,7 +177,7 @@ public class ClientHttp {
 //				if(br != null) {
 //					br.close();
 //				}
-//				socket.close();
+//				soc.close();
 			}else {
 				System.out.println("Invalid URL please. Provide valid httpc get or httpc post URL");
 			}
@@ -311,8 +311,8 @@ public void displayResponse(ResponseClient resp) throws IOException {
 //		
 //		URI uri =new URI(req.getRequestUrl());
 //		String host = uri.getHost();
-//		socket = new Socket(host, 80);
-//		OutputStream opt= socket.getOutputStream();
+//		soc = new Socket(host, 80);
+//		OutputStream opt= soc.getOutputStream();
 //		
 //		String pathWithoutProtocol = uri.getPath();
 //		String query= uri.getQuery();

@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
 /**
- * This class is the entry point of FTP Client Library Implementation.
+ * This class input the entry point of FTP Client Library Implementation.
  * 
  *
  */
@@ -26,8 +26,8 @@ public class ClientFile {
 	private static List<String> listOfHeaders= null;
 	private static Socket socket=null;
 	static ResponseClient resp;
-	static ObjectOutputStream os= null;
-	static ObjectInputStream is=null;
+	static ObjectOutputStream output= null;
+	static ObjectInputStream input=null;
 	
 	/**
 	 * This method id the entry point and when user run this class in console used
@@ -74,17 +74,17 @@ public class ClientFile {
 			// establish socket connection to server
 			socket = new Socket(host, uri.getPort());
 			// write to socket using ObjectOutputStream
-			os = new ObjectOutputStream(socket.getOutputStream());
-			is = new ObjectInputStream(socket.getInputStream());
+			output = new ObjectOutputStream(socket.getOutputStream());
+			input = new ObjectInputStream(socket.getInputStream());
 			System.out.println("Sending request to Socket Server");
-			os.writeObject(req);
+			output.writeObject(req);
 			
-			os.writeObject("Test");
+			output.writeObject("Test");
 
 			String reqMethod = req.getRequestMethod();
 
 			// read the server response message
-			resp = (ResponseClient) is.readObject();
+			resp = (ResponseClient) input.readObject();
 			if (reqMethod.equalsIgnoreCase("get/")) {
 
 				System.out.println(resp.getResponseHeader());
@@ -128,8 +128,8 @@ public class ClientFile {
 			}
 			
 
-			os.flush();
-			os.close();
+			output.flush();
+			output.close();
 			
 		}
 	}
