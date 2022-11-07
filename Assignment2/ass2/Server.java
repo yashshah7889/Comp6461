@@ -320,8 +320,13 @@ public class Server {
 	}
 	
 	private static List<String> getFilesFromDir(File currentFolder) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> filelist = new ArrayList<>();
+		for (File file : currentFolder.listFiles()) {
+			if (!file.isDirectory()) {
+				filelist.add(file.getName());
+			}
+		}
+		return filelist;
 	}
 
 	/***
