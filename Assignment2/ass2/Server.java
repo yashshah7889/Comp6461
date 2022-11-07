@@ -309,13 +309,6 @@ public class Server {
 
 			}
 			
-			//2.Prepare an HTTP response
-			
-			//3.sent HTTP response to the client
-			
-			
-			//4.close the socket and other resources
-			
 		}
 	}
 	
