@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 /***
  *This class is a server class for http server and also ftp client Implementation 
@@ -42,15 +43,46 @@ public class Server {
 	private static RequestClient clientRequest;
 		
 	public static void main(String args[]) throws IOException, ClassNotFoundException, URISyntaxException {
-		
+		String request;
 		List<String> requestList = new ArrayList<>();
 
 		String dir = System.getProperty("user.dir");
+		
+		System.out.println("Dir ==>>>>> " + dir);
 
+		System.out.print(">");
+		Scanner sc = new Scanner(System.in);
+		request = sc.nextLine();
+		if (request.isEmpty() || request.length() == 0) {
+			System.out.println("Invalid Command Please try again!!");
+		}
+		String[] requestArray = request.split(" ");
+		requestList = new ArrayList<>();
+		for (int i = 0; i < requestArray.length; i++) {
+			requestList.add(requestArray[i]);
+		}
+
+		if (requestList.contains("-v")) {
+			temp = true;
+		}
+
+		if (requestList.contains("-p")) {
+			String portStr = requestList.get(requestList.indexOf("-p") + 1).trim();
+			port = Integer.valueOf(portStr);
+		}
+
+		if (requestList.contains("-d")) {
+			dir = requestList.get(requestList.indexOf("-d") + 1).trim();
+			System.out.println("Dir ==>>>>> " + dir);
+		}
+		
 		serverSocket=new ServerSocket(port);
 		System.out.println("listening for connection on port 8080");
 		
 		File currentFolder = new File(dir);
+
+
+		
 		while(true) {
 			final Socket socket=serverSocket.accept();
 			//initialize input and output stream
