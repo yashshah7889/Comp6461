@@ -1,6 +1,8 @@
 package ass2;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -118,7 +120,7 @@ public class Server {
 					List<String> files = getFilesFromDir(currentFolder);
 
 					if (!files.contains(requestedFileName)) {
-						responseHeaders = getResponseHeaders(FILE_NOT_FOUND_STATUS_CODE);
+						responseHeaders = getResponseHeaders("HTTP/1.1 404 FILE NOT FOUND");
 
 					} else {
 
@@ -314,6 +316,11 @@ public class Server {
 		}
 	}
 	
+	private static List<String> getFilesFromDir(File currentFolder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/***
 	 * this method is used to get response header in proper required format.
 	 * 
