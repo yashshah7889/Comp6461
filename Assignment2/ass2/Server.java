@@ -48,9 +48,9 @@ public class Server {
 
 		String dir = System.getProperty("user.dir");
 		
-		System.out.println("Dir ==>>>>> " + dir);
+		System.out.println("Directory ==>>>>> " + dir);
 
-		System.out.print(">");
+		System.out.print("==>");
 		Scanner sc = new Scanner(System.in);
 		request = sc.nextLine();
 		if (request.isEmpty() || request.length() == 0) {
@@ -73,30 +73,143 @@ public class Server {
 
 		if (requestList.contains("-d")) {
 			dir = requestList.get(requestList.indexOf("-d") + 1).trim();
-			System.out.println("Dir ==>>>>> " + dir);
+			System.out.println("Directory ==>>>>> " + dir);
 		}
 		
 		serverSocket=new ServerSocket(port);
-		System.out.println("listening for connection on port 8080");
+		if (temp) {
+				System.out.println("listening for connection on port: " + port);
+		}
+	//	System.out.println("listening for connection on port 8080");
 		
 		File currentFolder = new File(dir);
 
 
 		
 		while(true) {
-			final Socket socket=serverSocket.accept();
+			serverResponse = new ResponseClient();
+			Socket socket=serverSocket.accept();
+			if (temp)
+				System.out.println("Server is Connected to client ======>>>");
 			//initialize input and output stream
 			input = new ObjectInputStream(socket.getInputStream());
 			output = new ObjectOutputStream(socket.getOutputStream());
 			
 			//1.Read HTTP request from client socket
 			clientRequest = (RequestClient)input.readObject();
+			System.out.println("Message Received: " + clientRequest);
 			
 			String clientType= clientRequest.getClientType();
 			String method= clientRequest.getRequestMethod();
 			String responseHeaders= getResponseHeaders("HTTP/1.1 200 OK");
 			
-			if(clientType.equalsIgnoreCase("https")) {
+			if(clientType.equalsIgnoreCase("httpc")) {
+				String url = clientRequest.getRequestUrl();
+				URI uri = new URI(clientRequest.getRequestUrl());
+				String host = uri.getHost();
+
+				String query = uri.getQuery();
+
+				System.out.println("clientType ==> " + clientType);
+
+				if (temp)
+					System.out.println(" Server is Processing the httpc request");
+
+				String[] paramArr = {};
+				if (query != null && !query.isEmpty()) {
+
+					paramArr = query.split("&");
+				}
+				String inlineData = "";
+				String fileData = "";
+
+				if (clientRequest.hasVerbose()) {
+					serverResponse.setResponseHeaders(responseHeaders);
+				}
+				String body = "{\n";
+				body = body + "\t\"args\":";
+				body = body + "{";
+				// for query parameters from client
+				if (paramArr.length > 0) {
+					for (int i = 0; i < paramArr.length; i++) {
+						body = body + "\n\t    \"" + paramArr[i].substring(0, paramArr[i].indexOf("=")) + "\": \""
+								+ paramArr[i].substring(paramArr[i].indexOf("=") + 1) + "\"";
+						if (i != paramArr.length - 1) {
+							body = body + ",";
+						} else {
+							body = body + "\n";
+							body = body + "\t},\n";
+						}
+					}
+				} else {
+					body = body + "},\n";
+				}
+
+				// if method type is POST then
+				if (method.equalsIgnoreCase("POST")) {
+					body = body + "\t\"data\": ";
+					if (clientRequest.getHasInlineData()) {
+						inlineData = clientRequest.getInlineData();
+						body = body + "\"" + inlineData + "\",\n";
+					} else if (clientRequest.getTransferSuc()) {
+						fileData = clientRequest.getFileSendData();
+						body = body + "\"" + fileData + "\",\n";
+					} else {
+						body = body + "\"\",\n";
+					}
+					body = body + "\t\"files\": {},\n";
+					body = body + "\t\"form\": {},\n";
+				}
+
+				body = body + "\t\"headers\": {";
+
+				// for headers only
+				if (clientRequest.isHttpHeader()) {
+
+					for (String header : clientRequest.getHeaderLst()) {
+						String[] headerArr = header.split(":");
+						if (headerArr[0].equalsIgnoreCase("connection"))
+							continue;
+						body = body + "\n\t\t\"" + headerArr[0] + "\": \"" + headerArr[1].trim() + "\",";
+
+					}
+				}
+				if (clientRequest.getHasInlineData()) {
+					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getInlineData().length() + "\",";
+				} else if (clientRequest.getTransferSuc()) {
+					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getFileSendData().length() + "\",";
+				}
+				body = body + "\n\t\t\"Connection\": \"close\",\n";
+				body = body + "\t\t\"Host\": \"" + host + "\"\n";
+				body = body + "\t},\n";
+
+				if (method.equalsIgnoreCase("POST")) {
+					body = body + "\t\"json\": ";
+					if (clientRequest.getHasInlineData()) {
+						body = body + "{\n\t\t " + inlineData.substring(1, inlineData.length() - 1) + "\n\t},\n";
+					} else {
+						body = body + "{\n\t\t " + fileData + "\n\t},\n";
+					}
+				}
+				body = body + "\t\"origin\": \"" + InetAddress.getLocalHost().getHostAddress() + "\",\n";
+				body = body + "\t\"url\": \"" + url + "\"\n";
+				body = body + "}";
+
+				serverResponse.setResponseBody(body);
+				
+				if (temp)
+					System.out.println("Sending the response to Client ======>");
+
+				// write object to Socket
+				output.writeObject(serverResponse);
+				// close resources
+				input.close();
+				output.close();
+				serverSocket.close();
+
+			}
+			
+			else if(clientType.equalsIgnoreCase("https")) {
 				URI uri =new URI(clientRequest.getRequestUrl());
 				String host =uri.getHost();
 				
@@ -109,6 +222,9 @@ public class Server {
 				body = body + "\t\"args\":";
 				body = body + "{},\n";
 				body = body + "\t\"headers\": {";
+				body = body + "\n\t\t\"Connection\": \"close\",\n";
+				body = body + "\t\t\"Host\": \"" + host + "\"\n";
+				body = body + "\t},\n";
 				
 				if(!method.endsWith("/") && method.contains("get/") && url.contains("Content-Disposition:attachment")) {
 					body = body + "\n\t\t\"Content-Disposition\": \"attachment\",";
@@ -232,114 +348,124 @@ public class Server {
 					}
 
 				}
-				
-				
-			}
-			else if(clientType.equalsIgnoreCase("httpc")) {
-				String url = clientRequest.getRequestUrl();
-				URI uri = new URI(clientRequest.getRequestUrl());
-				String host = uri.getHost();
-
-				String query = uri.getQuery();
-
-				System.out.println("clientType ==> " + clientType);
-
-				if (temp)
-					System.out.println(" Server is Processing the httpc request");
-
-				String[] paramArr = {};
-				if (query != null && !query.isEmpty()) {
-
-					paramArr = query.split("&");
-				}
-				String inlineData = "";
-				String fileData = "";
-
-				if (clientRequest.hasVerbose()) {
-					serverResponse.setResponseHeaders(responseHeaders);
-				}
-				String body = "{\n";
-				body = body + "\t\"args\":";
-				body = body + "{";
-				// for query parameters from client
-				if (paramArr.length > 0) {
-					for (int i = 0; i < paramArr.length; i++) {
-						body = body + "\n\t    \"" + paramArr[i].substring(0, paramArr[i].indexOf("=")) + "\": \""
-								+ paramArr[i].substring(paramArr[i].indexOf("=") + 1) + "\"";
-						if (i != paramArr.length - 1) {
-							body = body + ",";
-						} else {
-							body = body + "\n";
-							body = body + "\t},\n";
-						}
-					}
-				} else {
-					body = body + "},\n";
-				}
-
-				// if method type is POST then
-				if (method.equalsIgnoreCase("POST")) {
-					body = body + "\t\"data\": ";
-					if (clientRequest.getHasInlineData()) {
-						inlineData = clientRequest.getInlineData();
-						body = body + "\"" + inlineData + "\",\n";
-					} else if (clientRequest.getTransferSuc()) {
-						fileData = clientRequest.getFileSendData();
-						body = body + "\"" + fileData + "\",\n";
-					} else {
-						body = body + "\"\",\n";
-					}
-					body = body + "\t\"files\": {},\n";
-					body = body + "\t\"form\": {},\n";
-				}
-
-				body = body + "\t\"headers\": {";
-
-				// for headers only
-				if (clientRequest.isHttpHeader()) {
-
-					for (String header : clientRequest.getHeaderLst()) {
-						String[] headerArr = header.split(":");
-						if (headerArr[0].equalsIgnoreCase("connection"))
-							continue;
-						body = body + "\n\t\t\"" + headerArr[0] + "\": \"" + headerArr[1].trim() + "\",";
-
-					}
-				}
-				if (clientRequest.getHasInlineData()) {
-					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getInlineData().length() + "\",";
-				} else if (clientRequest.getTransferSuc()) {
-					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getFileSendData().length() + "\",";
-				}
-				body = body + "\n\t\t\"Connection\": \"close\",\n";
-				body = body + "\t\t\"Host\": \"" + host + "\"\n";
-				body = body + "\t},\n";
-
-				if (method.equalsIgnoreCase("POST")) {
-					body = body + "\t\"json\": ";
-					if (clientRequest.getHasInlineData()) {
-						body = body + "{\n\t\t " + inlineData.substring(1, inlineData.length() - 1) + "\n\t},\n";
-					} else {
-						body = body + "{\n\t\t " + fileData + "\n\t},\n";
-					}
-				}
 				body = body + "\t\"origin\": \"" + InetAddress.getLocalHost().getHostAddress() + "\",\n";
 				body = body + "\t\"url\": \"" + url + "\"\n";
 				body = body + "}";
 
-				serverResponse.setResponseBody(body);
-				
 				if (temp)
 					System.out.println("Sending the response to Client ======>");
 
 				// write object to Socket
+				serverResponse.setResponseHeaders(responseHeaders);
+				serverResponse.setResponseBody(body);
 				output.writeObject(serverResponse);
-				// close resources
-				input.close();
-				output.close();
-				serverSocket.close();
-
+				
 			}
+//			else if(clientType.equalsIgnoreCase("httpc")) {
+//				String url = clientRequest.getRequestUrl();
+//				URI uri = new URI(clientRequest.getRequestUrl());
+//				String host = uri.getHost();
+//
+//				String query = uri.getQuery();
+//
+//				System.out.println("clientType ==> " + clientType);
+//
+//				if (temp)
+//					System.out.println(" Server is Processing the httpc request");
+//
+//				String[] paramArr = {};
+//				if (query != null && !query.isEmpty()) {
+//
+//					paramArr = query.split("&");
+//				}
+//				String inlineData = "";
+//				String fileData = "";
+//
+//				if (clientRequest.hasVerbose()) {
+//					serverResponse.setResponseHeaders(responseHeaders);
+//				}
+//				String body = "{\n";
+//				body = body + "\t\"args\":";
+//				body = body + "{";
+//				// for query parameters from client
+//				if (paramArr.length > 0) {
+//					for (int i = 0; i < paramArr.length; i++) {
+//						body = body + "\n\t    \"" + paramArr[i].substring(0, paramArr[i].indexOf("=")) + "\": \""
+//								+ paramArr[i].substring(paramArr[i].indexOf("=") + 1) + "\"";
+//						if (i != paramArr.length - 1) {
+//							body = body + ",";
+//						} else {
+//							body = body + "\n";
+//							body = body + "\t},\n";
+//						}
+//					}
+//				} else {
+//					body = body + "},\n";
+//				}
+//
+//				// if method type is POST then
+//				if (method.equalsIgnoreCase("POST")) {
+//					body = body + "\t\"data\": ";
+//					if (clientRequest.getHasInlineData()) {
+//						inlineData = clientRequest.getInlineData();
+//						body = body + "\"" + inlineData + "\",\n";
+//					} else if (clientRequest.getTransferSuc()) {
+//						fileData = clientRequest.getFileSendData();
+//						body = body + "\"" + fileData + "\",\n";
+//					} else {
+//						body = body + "\"\",\n";
+//					}
+//					body = body + "\t\"files\": {},\n";
+//					body = body + "\t\"form\": {},\n";
+//				}
+//
+//				body = body + "\t\"headers\": {";
+//
+//				// for headers only
+//				if (clientRequest.isHttpHeader()) {
+//
+//					for (String header : clientRequest.getHeaderLst()) {
+//						String[] headerArr = header.split(":");
+//						if (headerArr[0].equalsIgnoreCase("connection"))
+//							continue;
+//						body = body + "\n\t\t\"" + headerArr[0] + "\": \"" + headerArr[1].trim() + "\",";
+//
+//					}
+//				}
+//				if (clientRequest.getHasInlineData()) {
+//					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getInlineData().length() + "\",";
+//				} else if (clientRequest.getTransferSuc()) {
+//					body = body + "\n\t\t\"Content-Length\": \"" + clientRequest.getFileSendData().length() + "\",";
+//				}
+//				body = body + "\n\t\t\"Connection\": \"close\",\n";
+//				body = body + "\t\t\"Host\": \"" + host + "\"\n";
+//				body = body + "\t},\n";
+//
+//				if (method.equalsIgnoreCase("POST")) {
+//					body = body + "\t\"json\": ";
+//					if (clientRequest.getHasInlineData()) {
+//						body = body + "{\n\t\t " + inlineData.substring(1, inlineData.length() - 1) + "\n\t},\n";
+//					} else {
+//						body = body + "{\n\t\t " + fileData + "\n\t},\n";
+//					}
+//				}
+//				body = body + "\t\"origin\": \"" + InetAddress.getLocalHost().getHostAddress() + "\",\n";
+//				body = body + "\t\"url\": \"" + url + "\"\n";
+//				body = body + "}";
+//
+//				serverResponse.setResponseBody(body);
+//				
+//				if (temp)
+//					System.out.println("Sending the response to Client ======>");
+//
+//				// write object to Socket
+//				output.writeObject(serverResponse);
+//				// close resources
+//				input.close();
+//				output.close();
+//				serverSocket.close();
+//
+//			}
 			
 		}
 	}

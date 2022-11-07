@@ -40,7 +40,7 @@ public class ClientFile {
 		File file = new File("attachment");
 		file.mkdir();
 		while(true) {
-			listOfHeaders = new ArrayList();
+			
 			String fileReq="";
 			System.out.println("Enter File transfer Command:");
 			Scanner sc = new Scanner(System.in);
@@ -50,13 +50,10 @@ public class ClientFile {
 				continue;
 			}
 			
-			String reqSplit[] = fileReq.split(" ");
+			String reqSplit[] = fileReq.split("\\s+");
 			reqSplit[0] = "httpfs";
 			List<String> listOfReqData = Arrays.asList(reqSplit);
 			String reqUrl = "";
-			if (reqUrl.contains("\'")) {
-				reqUrl = reqUrl.replace("\'", "");
-			}
 			
 			if (fileReq.contains("post")) {
 				reqUrl = listOfReqData.get(2);
@@ -64,7 +61,9 @@ public class ClientFile {
 			} else {
 				reqUrl = listOfReqData.get(listOfReqData.size() - 1);
 			}
-			
+			if (reqUrl.contains("\'")) {
+				reqUrl = reqUrl.replace("\'", "");
+			}
 			
 			req.setHttpRequest(fileReq);
 			parseFileRequest(listOfReqData);
@@ -127,7 +126,8 @@ public class ClientFile {
 					}
 			}
 			
-
+//			System.out.println(resp.getResponseHeader());
+//			System.out.println(resp.getResponseBody());
 			output.flush();
 			output.close();
 			
@@ -135,6 +135,18 @@ public class ClientFile {
 	}
 
 	private static void parseFileRequest(List<String> reqData) {
+		listOfHeaders = new ArrayList<String>();
+//		if(reqData.get(1).equalsIgnoreCase("get")){
+//			if(reqData.get(2).contains("/") && reqData.get(2).length()>1){
+//				req.setTransferSuc(true);
+//				req.setFileTransferPath(reqData.get(2));
+//				
+//			}else{
+//				req.setTransferSuc(false);
+//				req.setFileTransferPath(null);
+//			}
+//		}
+//		req.setClientType(reqData.get(0));
 		int i=0;
 		while(i<reqData.size()) {
 			if(reqData.get(i).equalsIgnoreCase("-v")) {
@@ -166,9 +178,9 @@ public class ClientFile {
 		String[] fileReqSplit = fileClientReq.split("\\s+");
 		int j=0;
 		while(j<fileReqSplit.length){
-			if(fileReqSplit[i].startsWith("http://"))
+			if(fileReqSplit[j].startsWith("http://"))
 			{
-				String[] methodCollection = fileReqSplit[i].split("/");
+				String[] methodCollection = fileReqSplit[j].split("/");
 				if(methodCollection.length==4)
 				{
 					req.setClientType(reqData.get(0));
@@ -181,7 +193,7 @@ public class ClientFile {
 					req.setRequestMethod(str);
 				}
 			}
-			i++;
+			j++;
 		}
 		if (req.getHasInlineData()) {
 			if (req.getInlineData().contains("\'")) {

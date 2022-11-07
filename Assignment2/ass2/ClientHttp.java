@@ -153,31 +153,6 @@ public class ClientHttp {
 				output.close();
 				input.close();
 				
-//				BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-//				String status = br.readLine();
-//				String t;
-//			
-//				String[] sa= status.split(" ");
-//				if(sa[1].contains("3")){
-//					req.setRedirect(true);
-//					while((t= br.readLine())!=null) {
-//						if(t.startsWith("Location:")) {
-//							req.setRedirectLocation(t.split(" ")[1]);
-//							System.out.println("redirect to the location: " +  req.getRedirectLocation());
-//							break;
-//						}
-//					}
-//				}
-////				
-////				if(req.isFileWrite()) {
-////					printInFile(br,status);
-////				}else {
-////					displayResponse(br,status);
-////				}
-//				if(br != null) {
-//					br.close();
-//				}
-//				soc.close();
 			}else {
 				System.out.println("Invalid URL please. Provide valid httpc get or httpc post URL");
 			}
@@ -194,35 +169,11 @@ public class ClientHttp {
  */
 public void displayResponse(ResponseClient resp) throws IOException {
 	
-//	String line;
 		if(req.hasVerbose()) {
 			System.out.println(resp.getResponseHeader());
 			System.out.println(resp.getResponseBody());
-//			System.out.println(status);
-//			while((line=reader.readLine()) != null) {
-//				System.out.println(line);
-//				if(line.equals("}")) {
-//					
-//					break;
-//				}
-//			}
 		}else {
 			System.out.println(resp.getResponseBody());
-			
-//			boolean jsonPresent= false;
-//			while((line=reader.readLine()) != null) {
-//				if(line.trim().equals("{")) {
-//					jsonPresent= true;
-//				}
-//				if(jsonPresent) {
-//					
-//					System.out.println(line);
-//					if(line.equals("}")) {
-//						break;
-//					}
-//				}
-//				
-//			}
 		}
 	}
 	
@@ -240,28 +191,8 @@ public void displayResponse(ResponseClient resp) throws IOException {
 		if(req.hasVerbose()) {
 			pw.println(resp.getResponseHeader());
 			pw.println(resp.getResponseBody());
-//			System.out.println(status);
-//			while((line=reader.readLine())!=null) {
-//				pw.println(line);
-//				if(line.equals("}")) {
-//					break;
-//				}
-//			}
 		}else {
 			pw.println(resp.getResponseBody());
-//			boolean jsonPresent= false;
-//			while((line=reader.readLine())!=null) {
-//				if(line.trim().equals("{")) {
-//					jsonPresent= true;
-//				}
-//				if(jsonPresent) {
-//					pw.println(line);
-//					if(line.equals("}")) {
-//						break;
-//					}
-//				}
-//				
-//			}
 		}
 		
 		System.out.println("Response has been stored successfully in ( "+ req.getFileWritePath()+ " ) File path");
@@ -308,47 +239,13 @@ public void displayResponse(ResponseClient resp) throws IOException {
 		}
 
 		req.setRequestMethod(reqData.get(1));
-//		
-//		URI uri =new URI(req.getRequestUrl());
-//		String host = uri.getHost();
-//		soc = new Socket(host, 80);
-//		OutputStream opt= soc.getOutputStream();
-//		
-//		String pathWithoutProtocol = uri.getPath();
-//		String query= uri.getQuery();
-//		
-//		if(pathWithoutProtocol != null && query !=null) {
-//			
-//				if(query.length()>0 || pathWithoutProtocol.length()>0) {
-//					pathWithoutProtocol = pathWithoutProtocol + "?" +query;
-//				}
-//		};
-//		PrintWriter writer = new PrintWriter(opt);
-//	
-//		if(pathWithoutProtocol.length() == 0) {
-//			writer.println(req.getRequestMethod().toUpperCase() + " HTTP/1.0");
-//		}else {
-//			writer.println(req.getRequestMethod().toUpperCase() + " " + pathWithoutProtocol + " HTTP/1.0");
-//		}
-//		
-//		writer.print("Host: " + host + "\r\n");
-//		
-		//-h : http header
-//		if (req.isHttpHeader()) {
-//			if (!listOfHeaders.isEmpty()) {
-//
-//				for (int j = 0; j < listOfHeaders.size(); j++) {
-//					String[] headerdetails = listOfHeaders.get(j).split(":");
-//					writer.write(headerdetails[0] + ":" + headerdetails[1] + "\r\n");
-//				}
-//			}
-//		}
+
 		// -d : inline data
 		if(req.getHasInlineData()) {
 			if(req.getInlineData().contains("\'")) {
 				req.setInlineData(req.getInlineData().replace("\'", ""));
 			}
-//			writer.print("Content-Length: " + req.getInlineData().length() + "\r\n");
+
 		
 		//-f : sending file data
 		}else if(req.getTransferSuc()) {
@@ -360,23 +257,11 @@ public void displayResponse(ResponseClient resp) throws IOException {
 			while((str =bf.readLine())!= null) {
 				fd.append(str);
 			}
-//			writer.println("Content-Length: " + fd.length() +"\r\n");
+
 
 			bf.close();
 			req.setFileSendData(fd.toString());
 		}
 		
-//		if(req.getHasInlineData()) {
-//			writer.print("\r\n");
-//			writer.print(req.getInlineData());
-//			writer.print("\r\n");
-//		}else if (req.getTransferSuc()) {
-//			writer.print("\r\n");
-//			writer.print(fd.toString());
-//			writer.print("\r\n");
-//		} else {
-//			writer.print("\r\n");
-//		}
-//		writer.flush();
 	}
 }

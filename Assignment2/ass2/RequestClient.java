@@ -1,10 +1,12 @@
 package ass2;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestClient {
+public class RequestClient implements Serializable{
+//	private static final long serialVersionUID = 2207162898379302282L;
 	private String httpRequest;
 	private boolean hasVerbose;
 	private boolean hasHeader;
@@ -22,6 +24,7 @@ public class RequestClient {
 	private String redirectLocation;
 	private String clientType;
 	private String fileSendData;
+	private String message;
 	
 	
 	//class contains all the getter and setter methods required in HttpClient
@@ -137,4 +140,21 @@ public class RequestClient {
 		this.fileSendData = fileSendData;
 	}
 
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	@Override
+	public String toString() {
+		return "HttpClientRequest [requestUrl=" + this.url + ", inlineData=" + inlineData + ", redirectLocation="
+				+ redirectLocation + ", requestMethod=" + requestMethod + ", httpRequest=" + httpRequest
+				+ ", fileSendPath=" + this.fileTransferPath + ", fileSendData=" + fileSendData + ", fileWritePath="
+				+ fileWritePath + ", isVerbosePreset=" + hasVerbose + ", isHttpHeader=" + this.hasHeader
+				+ ", isInlineData=" + this.hasInlineData + ", isFilesend=" + this.transferSucc + ", isFileWrite=" + isFileWrite
+				+ ", isRedirect=" + isRedirect + ", clientType=" + clientType + ", message=" + message + ", headerLst="
+				+ this.listOfHeaders + "]";
+	}
 }

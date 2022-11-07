@@ -1,7 +1,10 @@
 package ass2;
 
-public class ResponseClient {
+import java.io.Serializable;
+
+public class ResponseClient implements Serializable{
 	
+//	private static final long serialVersionUID = -2167025103933277470L;
 	private String responseHeaders;
 	private String responseBody;
 	private String requestFileName;
