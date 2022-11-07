@@ -1,13 +1,20 @@
 package ass2;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 public class ClientFile {
 	static RequestClient req= new RequestClient();
@@ -17,10 +24,10 @@ public class ClientFile {
 	static ObjectOutputStream os= null;
 	static ObjectInputStream is=null;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws URISyntaxException, UnknownHostException, IOException, ClassNotFoundException {
 		//user working directory
 		String directory = System.getProperty("user.dir");
-		File file = new File("report");
+		File file = new File("attachment");
 		file.mkdir();
 		while(true) {
 			listOfHeaders = new ArrayList();
@@ -51,6 +58,67 @@ public class ClientFile {
 			req.setHttpRequest(fileReq);
 			parseFileRequest(listOfReqData);
 			
+			URI uri = new URI(req.getRequestUrl());
+			String host = uri.getHost();
+			// establish socket connection to server
+			socket = new Socket(host, uri.getPort());
+			// write to socket using ObjectOutputStream
+			os = new ObjectOutputStream(socket.getOutputStream());
+			is = new ObjectInputStream(socket.getInputStream());
+			System.out.println("Sending request to Socket Server");
+			os.writeObject(req);
+			
+			os.writeObject("Test");
+
+			String reqMethod = req.getRequestMethod();
+
+			// read the server response message
+			resp = (ResponseClient) is.readObject();
+			if (reqMethod.equalsIgnoreCase("get/")) {
+
+				System.out.println(resp.getResponseHeader());
+				System.out.println(resp.getResponseBody());
+
+			}else if (!reqMethod.endsWith("/") && reqMethod.contains("post/")) {
+
+				System.out.println(resp.getResponseHeader());
+				System.out.println(resp.getResponseBody());
+				
+			} else if (!reqMethod.endsWith("/") && reqMethod.contains("get/")) {
+				if (fileReq.contains("Content-Disposition:attachment")) {
+
+					String status = resp.getResponseCode();
+
+					if (!status.equals("404")) {
+
+						String fileData = resp.getResponseBody();
+						String fileName = resp.getRequestFileName();
+
+						file = new File(directory + "/attachment/" + fileName);
+						file.createNewFile();
+
+						BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+						PrintWriter pw = new PrintWriter(bw);
+
+						pw.print(fileData);
+						pw.flush();
+						pw.close();
+					}
+
+					System.out.println(resp.getResponseHeader());
+					System.out.println(resp.getResponseBody());
+
+					if (!status.equals("404"))
+						System.out.println("File downloaded in " + directory + "/attachment");
+					} else {
+						System.out.println(resp.getResponseHeader());
+						System.out.println(resp.getResponseBody());
+					}
+			}
+			
+
+			os.flush();
+			os.close();
 			
 		}
 	}
@@ -98,8 +166,8 @@ public class ClientFile {
 				else if(methodCollection.length==5)
 				{
 					req.setClientType(reqData.get(0));
-					String a = methodCollection[3]+"/"+methodCollection[4];
-					req.setRequestMethod(a);
+					String str = methodCollection[3]+"/"+methodCollection[4];
+					req.setRequestMethod(str);
 				}
 			}
 			i++;

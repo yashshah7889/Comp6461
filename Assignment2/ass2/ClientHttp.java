@@ -125,17 +125,17 @@ public class ClientHttp {
 				parseRequestQuery(listOfReqData);
 				
 				URI uri = new URI(req.getRequestUrl());
-				String hostName = uri.getHost();
+				String host = uri.getHost();
 
 				// establish socket connection to server
-				socket = new Socket(hostName, uri.getPort());
+				socket = new Socket(host, uri.getPort());
 				// write to socket using ObjectOutputStream
 				os = new ObjectOutputStream(socket.getOutputStream());
+				is = new ObjectInputStream(socket.getInputStream());
 				System.out.println("Sending request to Socket Server");
 				os.writeObject(req);
 
 				// read the server response message
-				is = new ObjectInputStream(socket.getInputStream());
 				resp = (ResponseClient) is.readObject();
 
 				if (req.isFileWrite()) {
